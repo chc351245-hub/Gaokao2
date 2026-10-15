@@ -11,7 +11,12 @@ import pandas as pd
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
+if (BASE_DIR / "data").exists():
+    DATA_DIR = BASE_DIR / "data"
+elif (BASE_DIR.parent / "data").exists():
+    DATA_DIR = BASE_DIR.parent / "data"
+else:
+    DATA_DIR = BASE_DIR / "data"
 
 class GaokaoRecommendEngine:
     def __init__(self):

@@ -5,10 +5,17 @@
 ================================================================================
 """
 
+import sys
+from pathlib import Path
+
+# 确保脚本所在目录优先加入搜索路径（支持在根目录或 github_upload 子目录独立运行）
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
 import streamlit as st
 import pandas as pd
 import json
-from pathlib import Path
 from core.recommend_engine import engine
 
 # ============================================================================
