@@ -23,11 +23,19 @@ class GaokaoRecommendEngine:
         self.insights = self._load_insights()
         self.majors_df = self._load_majors_df()
         self.top_schools_df = self._load_top_schools_df()
+        self.sister_majors = self._load_sister_majors()
         
     def _load_insights(self):
         insights_file = DATA_DIR / "category_reality_insights.json"
         if insights_file.exists():
             with open(insights_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        return {}
+
+    def _load_sister_majors(self):
+        sister_file = DATA_DIR / "sister_majors_comparison.json"
+        if sister_file.exists():
+            with open(sister_file, "r", encoding="utf-8") as f:
                 return json.load(f)
         return {}
 
@@ -127,6 +135,90 @@ class GaokaoRecommendEngine:
             return "艺术设计"
         return "综合应用"
 
+    def _generate_recommend_reason(self, cat_name, user_profile, answers, info):
+        """根据考生答题倾向 (Q1~Q12) 动态生成专属个性化推荐理由"""
+        traits = []
+        cluster = self._get_broad_cluster(cat_name)
+        hardness = info.get("engineering_hardness", 0.5)
+        econ = user_profile.get("family_econ", "")
+
+        q1 = answers.get("Q1", "")
+        q2 = answers.get("Q2", "")
+        q3 = answers.get("Q3", "")
+        q4 = answers.get("Q4", "")
+        q5 = answers.get("Q5", "")
+        q7 = answers.get("Q7", "")
+        q8 = answers.get("Q8", "")
+        q9 = answers.get("Q9", "")
+        q10 = answers.get("Q10", "")
+        q11 = answers.get("Q11", "")
+
+        # 工科与技术信息类
+        if cluster in ["信息工科", "传统/重工业工科"]:
+            if "A" in q1: traits.append("对数码硬件与代码底层的本能探究欲")
+            if "A" in q2: traits.append("遇复杂报错底层死磕的技术韧性")
+            if "A" in q3: traits.append("亲手拆装电路与机械实操的动手力")
+            if "B" in q4: traits.append("交付真实工程系统跑通的极高成就感")
+            if "A" in q7: traits.append("‘凭一身硬手艺安身立命、跳槽不看脸色’的底气诉求")
+            if "D" in q10: traits.append("扎根硬核工业标准与不可轻易替代的技术壁垒")
+        # 法政社科与文史
+        elif cluster in ["法政社科", "文史哲传媒"]:
+            if "B" in q1: traits.append("对深度社科与人文长文的研读钻研耐性")
+            if "B" in q3: traits.append("善于溯源法规条款、厘清权责红线的严谨秩序感")
+            if "C" in q4: traits.append("对社会运行机制与制度规矩的深刻洞察")
+            if "D" in q5: traits.append("享受文献考据、耐得住寂寞的治学沉静心性")
+            if "B" in q7 or "B" in q8: traits.append("立志体制求稳、在公务员/国企编制招录上的显著优势")
+            if "C" in q10: traits.append("依靠体制合规体系保护、免疫市场波动的长效安全感")
+        # 经管商科
+        elif cluster == "经管商科":
+            if "C" in q1: traits.append("善于统筹多方资源与精细化规划预算的调度直觉")
+            if "C" in q3: traits.append("精打细算、权衡折旧与维修成本的敏锐商业嗅觉")
+            if "D" in q4: traits.append("沉醉于市场现金流博弈与商业运转的进取心")
+            if "C" in q5: traits.append("在商务谈判博弈中说服多方促成合作的社交说服力")
+            if "D" in q7: traits.append("善用商业直觉与资产杠杆撬动超额溢价的财富观")
+        # 医学医药
+        elif cluster == "医学医药":
+            if "D" in q2: traits.append("对生命实体生理构造与实物观察的敏锐直觉")
+            if "B" in q5: traits.append("面对面解除他人病痛、践行救死扶伤的崇高利他心")
+            if "C" in q7: traits.append("‘考取国家终身执业牌照、经验越老越吃香’的长坡厚雪赛道诉求")
+            if "B" in q10: traits.append("技能经验不随技术迭代淘汰、年资沉淀越久护城河越宽")
+        # 数理自科
+        elif cluster == "数理自科":
+            if "A" in q4: traits.append("偏好第一性原理推导与追求数学定理证明的纯粹求知欲")
+            if "A" in q5: traits.append("习惯沉浸在抽象逻辑系统之中获得心流充能的思维习惯")
+            if "D" in q8: traits.append("深耕高校与科研院所象牙塔、做科研学者的纯粹志向")
+        # 艺术设计
+        elif cluster == "艺术设计":
+            if "D" in q1: traits.append("对视听审美与内容策划的创意直觉")
+            if "D" in q3: traits.append("对产品外观质感与工业造型设计的审美敏感度")
+
+        econ_trait = ""
+        if "A" in q9 or "急需本科" in econ:
+            if hardness >= 0.75 or cluster == "经管商科" or cat_name == "电气类":
+                econ_trait = "具备较强本科直接高质量就业变现能力，契合你的家庭深造容错边界"
+        elif "C" in q9 or "优渥" in econ:
+            econ_trait = "你与家庭做好了长线深造作战准备，能平稳跨过该领域的名校硕博硬门槛"
+
+        avoid_trait = ""
+        if "A" in q11 and cat_name not in ["土木类", "水利类", "建筑类", "地质类", "矿业类", "交通运输类"]:
+            avoid_trait = "完全规避了你排斥的偏远野外工地驻场环境"
+        elif "B" in q11 and cat_name not in ["化工与制药类", "材料类", "轻工类", "纺织类", "生物工程类"]:
+            avoid_trait = "完全绕开了你排斥的密闭车间与化学异味倒班环境"
+
+        if traits:
+            core_str = "、".join(traits[:2])
+            reason = f"契合你在此前评测中表现出的【{core_str}】"
+        else:
+            reason = f"综合匹配了你在此前多项生活情境中的思维本能与能力倾向"
+
+        if econ_trait:
+            reason += f"；且{econ_trait}"
+        if avoid_trait:
+            reason += f"；同时{avoid_trait}"
+
+        reason += "，是契合你天赋秉性与避坑诉求的最优解之一。"
+        return reason
+
     def calculate_recommendations(self, user_profile, answers):
         """
         核心分层门控漏斗推荐算法 (HGFA 2.0)
@@ -179,15 +271,14 @@ class GaokaoRecommendEngine:
                 continue
 
             # ----------------------------------------------------
-            # 3. 避坑全局过滤与反向微观情境一票否决
+            # 3. 避坑大类彻底解耦出算法（由专属避坑避雷指南专区全景承载）
             # ----------------------------------------------------
+            if is_pitfall:
+                # 19 个避坑大类不参与主流算法排名，由专属【19大高危与下行专业全景剖析专区】深度解读
+                continue
+
             should_intercept = False
             intercept_reason = ""
-
-            # 全局避坑开关
-            if enable_pitfall and is_pitfall:
-                should_intercept = True
-                intercept_reason = info.get("pitfall_warning", "该方向受行业下行周期或低壁垒替代影响，已被全局避坑守护拦截。")
 
             # Q11: 工作环境一票否决
             q11_ans = answers.get("Q11", "")
@@ -433,6 +524,7 @@ class GaokaoRecommendEngine:
                 majors = [{"name": cat_name.replace("类", ""), "code": "通用代码", "desc": "核心主干方向"}]
 
             top_schools = self.get_top_schools(cat_name)
+            recommend_reason = self._generate_recommend_reason(cat_name, user_profile, answers, info)
 
             results.append({
                 "rank": rank_emojis[idx] if idx < len(rank_emojis) else "⭐",
@@ -444,12 +536,14 @@ class GaokaoRecommendEngine:
                 "degree": info.get("degree_requirement", "本硕皆宜"),
                 "warning": info.get("pitfall_warning", ""),
                 "insight": info.get("reality_insight", ""),
+                "recommend_reason": recommend_reason,
                 "marketing_myth": info.get("marketing_myth", "招生简章复合型领军精英"),
                 "truth_unfiltered": info.get("truth_unfiltered", "真实工作日常实录"),
                 "civil_service_tag": info.get("civil_service_tag", "体制内招录属性"),
                 "experience_value": info.get("experience_value", "经验沉淀属性"),
                 "majors": majors,
-                "top_schools": top_schools
+                "top_schools": top_schools,
+                "sister_benchmarks": self.sister_majors.get(cat_name, [])
             })
 
         return results, intercepted[:5]

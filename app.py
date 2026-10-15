@@ -16,7 +16,15 @@ if str(SCRIPT_DIR) not in sys.path:
 import streamlit as st
 import pandas as pd
 import json
+from pathlib import Path
 from core.recommend_engine import engine
+
+def load_pitfall_encyclopedia():
+    p = Path(__file__).resolve().parent / "data" / "pitfall_majors_encyclopedia.json"
+    if p.exists():
+        with open(p, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
 
 # ============================================================================
 # 页面基础配置与高阶美学动效样式
@@ -186,6 +194,19 @@ html, body, [class*="css"] {
 .badge-info { background: #F0F9FF; color: #075985; border: 1px solid #BAE6FD; }
 .badge-purple { background: #FAF5FF; color: #6B21A8; border: 1px solid #E9D5FF; }
 
+/* 专属量身推荐理由容器 */
+.reason-box {
+    background: #EFF6FF;
+    border-left: 4px solid #2563EB;
+    border-radius: 0 10px 10px 0;
+    padding: 12px 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+    color: #1E3A8A;
+    line-height: 1.6;
+}
+
 /* 招生包装打假 Truth Filter 容器 */
 .truth-box {
     background: #FFFBEB;
@@ -224,6 +245,35 @@ html, body, [class*="css"] {
     font-size: 13.5px;
     color: #334155;
     line-height: 1.6;
+}
+
+/* 孪生备选对标台容器 */
+.sister-card-box {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-left: 4px solid #16A34A;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.sister-header {
+    font-weight: 700;
+    color: #166534;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sister-item {
+    background: #FFFFFF;
+    border: 1px solid #DCFCE7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 8px;
 }
 
 /* 避坑拦截抽屉 */
@@ -585,19 +635,63 @@ elif st.session_state.current_step == 3:
         st.session_state.quiz_answers
     )
 
-    # 避坑拦截守护 Banner
-    if st.session_state.user_profile.get("enable_pitfall_filter", True) and intercepted_pitfalls:
-        with st.expander(f"🛡️ 避坑排雷守护进行中：系统已为你自动拦截 {len(intercepted_pitfalls)} 个低实用性/艰苦/伪工科专业", expanded=True):
-            st.markdown("根据你的选科、硬技术诉求及 **Q11/Q12 一票否决排斥项**，以下专业已被**底层拦截**并替补为硬核高壁垒专业：")
-            for item in intercepted_pitfalls:
-                st.markdown(
-                    f"""
-                    <div style="margin-bottom:8px;font-size:13.5px;">
-                        • ❌ <b>{item['name']}</b>：<span style="color:#B91C1C;">{item['reason']}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+    # ========================================================================
+    # 专属【19 大高危与下行避坑专业深度全景剖析专区】（独立专属按键专区）
+    # ========================================================================
+    pitfall_encyclopedia = load_pitfall_encyclopedia()
+    if pitfall_encyclopedia:
+        with st.expander("🚨 【志愿避坑排雷指南 / 19 大高危与下行专业深度全景剖析专区】（点击展开查阅为何劝退、详细优劣势与唯一生存路径）", expanded=False):
+            st.markdown(
+                """
+                <div style="font-size:13px;color:#991B1B;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;margin-bottom:14px;line-height:1.6;">
+                    🛡️ <b>独立排雷专区说明</b>：以下 19 个专业受<b>行业周期断崖、生化环材毒害倒班、偏远野外极端艰苦或纯管理低壁垒</b>影响，已彻底移出算法推荐榜。在此专区中，我们为你<b>客观剖析每个专业的招生宣称、残酷日常、唯一优点及极少数适合人群</b>，帮助你与家庭理性决策，坚决不踩暗坑！
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            tab_p1, tab_p2, tab_p3 = st.tabs([
+                "🏗️ 偏远野外与周期断崖 (5个)",
+                "🧪 传统生化环材高危 (5个)",
+                "📋 虚假高大上与低壁垒行政 (9个)"
+            ])
+
+            def render_pitfall_cards(target_group):
+                for p_name, p_info in pitfall_encyclopedia.items():
+                    if target_group in p_info.get("group", ""):
+                        st.markdown(
+                            f"""
+                            <div style="background:#FFFFFF;border:1px solid #E5E7EB;border-left:4px solid #DC2626;border-radius:8px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
+                                    <span style="font-size:16px;font-weight:800;color:#991B1B;">⚠️ {p_info['name']}</span>
+                                    <span style="background:#FEE2E2;color:#991B1B;font-weight:700;font-size:11.5px;padding:2px 8px;border-radius:6px;">风险评级: {p_info['risk_level']}</span>
+                                </div>
+                                <div style="font-size:12.5px;margin-bottom:4px;">
+                                    <span style="font-weight:700;color:#92400E;">🔥 招生宣传包装: </span>
+                                    <span style="text-decoration:line-through;color:#B45309;opacity:0.9;">“{p_info['marketing_myth']}”</span>
+                                </div>
+                                <div style="font-size:12.5px;margin-bottom:6px;color:#78350F;">
+                                    <span style="font-weight:700;color:#166534;">🥊 真实日常打假: </span>{p_info['truth_unfiltered']}
+                                </div>
+                                <div style="font-size:12px;color:#065F46;background:#F0FDF4;padding:6px 10px;border-radius:6px;margin-bottom:4px;border:1px solid #DCFCE7;">
+                                    ✅ <b>唯一优点与极少数适合人群</b>: {p_info['pros']}
+                                </div>
+                                <div style="font-size:12px;color:#991B1B;background:#FEF2F2;padding:6px 10px;border-radius:6px;margin-bottom:6px;border:1px solid #FEE2E2;">
+                                    ❌ <b>致命硬伤与劝退根因</b>: {p_info['cons']}
+                                </div>
+                                <div style="font-size:12px;color:#1E3A8A;background:#EFF6FF;padding:6px 10px;border-radius:6px;border:1px dashed #93C5FD;">
+                                    🧭 <b>报考避坑忠告</b>: {p_info['verdict']}
+                                </div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+            with tab_p1:
+                render_pitfall_cards("偏远艰苦野外与周期断崖组")
+            with tab_p2:
+                render_pitfall_cards("传统‘生化环材’高危替代组")
+            with tab_p3:
+                render_pitfall_cards("虚假高大上与低壁垒行政组")
 
     st.markdown("### 🏆 专属精准推荐专业 Top 5")
 
@@ -632,6 +726,17 @@ elif st.session_state.current_step == 3:
             unsafe_allow_html=True
         )
 
+        # 专属量身推荐理由
+        if c.get("recommend_reason"):
+            st.markdown(
+                f"""
+                <div class="reason-box">
+                    🎯 <b>为你量身推荐的专属理由</b>: {c['recommend_reason']}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
         # 招生包装打假 (Truth Filter) 核心特色区域
         st.markdown(
             f"""
@@ -659,6 +764,43 @@ elif st.session_state.current_step == 3:
             """,
             unsafe_allow_html=True
         )
+
+        # 孪生备选对标台 / 考生分流对比
+        if c.get("sister_benchmarks") and len(c["sister_benchmarks"]) > 0:
+            sisters_html = ""
+            for s in c["sister_benchmarks"][:2]:
+                sisters_html += f"""
+                <div class="sister-item">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:4px;">
+                        <span style="font-weight:700;font-size:13.5px;color:#166534;">🔄 孪生对标：{s['sister_name']}</span>
+                        <span style="background:#DCFCE7;color:#15803D;font-weight:600;font-size:11.5px;padding:2px 8px;border-radius:6px;">{s['relation_tag']}</span>
+                    </div>
+                    <div style="font-size:12px;color:#374151;margin-bottom:3px;">
+                        📊 <b>录取分差预估</b>: <span style="color:#B45309;font-weight:600;">{s['score_diff']}</span>
+                    </div>
+                    <div style="font-size:12px;color:#1F2937;margin-bottom:3px;">
+                        ✅ <b>对标优势</b>: {s['pros']}
+                    </div>
+                    <div style="font-size:12px;color:#4B5563;margin-bottom:4px;">
+                        ⚠️ <b>现实代价</b>: {s['cons']}
+                    </div>
+                    <div style="font-size:12px;color:#1E3A8A;background:#F0FDF4;padding:6px 10px;border-radius:6px;border:1px dashed #86EFAC;">
+                        🧭 <b>考生报考分流建议</b>: {s['verdict']}
+                    </div>
+                </div>
+                """
+            st.markdown(
+                f"""
+                <div class="sister-card-box">
+                    <div class="sister-header">🔄 【孪生备选对标台 / 考生自主分流选择】</div>
+                    <div style="font-size:12px;color:#15803D;margin-bottom:4px;">
+                        💡 <b>专业不应非此即彼，把选择权交给你</b>：若你对该大类感兴趣但担忧分数过高、或追求不同变现路径，可对比以下孪生备选赛道：
+                    </div>
+                    {sisters_html}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         # 核心细分专业
         if c.get("majors") and len(c["majors"]) > 0:
