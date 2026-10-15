@@ -250,7 +250,7 @@ if "user_profile" not in st.session_state:
         "score": 605,
         "rank_pct": 8.0,
         "subjects": ["物理", "化学", "生物"],
-        "target_goal": "大厂高薪与硬核研发（追求高起薪、凭硬技术吃饭，不靠拼爹）",
+        "target_goal": "🧭 尚不明确 / 开放探索（根据后续12道实战情境题，测出我的真实天赋与兴趣）",
         "family_econ": "中等小康（可支持硕士深造）",
         "enable_pitfall_filter": True,
     }
@@ -363,8 +363,9 @@ if st.session_state.current_step == 1:
     with col2:
         st.markdown("##### 🚀 核心人生目标与出路偏好")
         target_goal = st.selectbox(
-            "本科毕业后你最渴望的主要出路是：",
+            "本科毕业后你最渴望的主要出路是（若现阶段不明确，建议保留默认开放探索）：",
             options=[
+                "🧭 尚不明确 / 开放探索（根据后续12道实战情境题，测出我的真实天赋与兴趣）",
                 "大厂高薪与硬核研发（追求高起薪、凭硬技术吃饭，不靠拼爹）",
                 "体制内考公考编 / 国企央企（求稳体面，抗风险第一）",
                 "医学临床或口腔执业（周期长但越老越吃香，社会地位高）",
