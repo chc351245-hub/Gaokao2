@@ -219,6 +219,52 @@ class GaokaoRecommendEngine:
         reason += "，是契合你天赋秉性与避坑诉求的最优解之一。"
         return reason
 
+    def _generate_tier_alert(self, cat_name, user_profile):
+        """根据考生位次与专业现实属性生成卡片底部的真实就读与报考提示"""
+        rank_pct = user_profile.get("rank_pct", 10.0)
+        score = user_profile.get("score", 600)
+
+        if cat_name in ["金融学类", "经济与贸易类"]:
+            if rank_pct >= 15.0 or score < 580:
+                return "⚠️【院校层级与求职实情警示】：金融行业高度看重‘第一学历名校光环’与家庭人脉资源。若在普通二本/双非就读，进投行券商核心组门槛极高，毕业多偏向基层银行网点拉存款柜员或销售，建议以扎实考研或转战公考为主要目标。"
+            else:
+                return "💡【名校资源赋能提示】：以你的预估位次有望进入头部高水平大学，该专业名校光环附加值极大，适合深耕券商投行、公募资管等核心金融业务。"
+
+        elif cat_name == "法学类":
+            if rank_pct >= 18.0 or score < 560:
+                return "⚠️【院校层级与法考警示】：法学极度看重‘五院四系’名校背景与司法考试（法考）。若就读于普通院校，务必在本科期间全力拿下法考 A 证，提早锚定公务员省考国考或基层法检选调。"
+            else:
+                return "💡【法学精英提示】：高位次进入顶尖法学院，法检系统选调与红圈所律师助理门槛通畅，建议本硕连读深造。"
+
+        elif cat_name in ["临床医学类", "口腔医学类"]:
+            if rank_pct >= 12.0:
+                return "⚠️【学制战线与医院门槛警示】：地级市以上三甲医院招聘普遍要求‘名校医学博士 + 规范化培训’（8~11年漫长周期）。普通本科临床大多面向县级医院或基层社区卫生院，求稳建议规划专硕规培并轨。"
+            else:
+                return "💡【医学长周期提示】：适合冲刺顶尖医学院 5+3 本硕一体化或本博贯通培养，家庭需具备支持 8 年以上长线深造的耐心与经济容错。"
+
+        elif cat_name in ["计算机类", "电子信息类", "软件工程"]:
+            if rank_pct >= 18.0:
+                return "💡【硬技能逆袭提示】：技术类专业相对更看重真实代码能力与工程项目经验，双非普通院校只要技术扎实、积极参与开源开发与算法竞赛，依然能获得极高质量的起薪。"
+            else:
+                return "💡【高端架构规划】：名校背景在互联网与芯片外企具备极高简历初筛豁免权，建议在校期间多进导师核心实验室攻坚前沿项目。"
+
+        elif cat_name == "电气类":
+            if rank_pct >= 15.0:
+                return "💡【电网特色院校报考技巧】：进国家电网不仅看 985，原电力部直属双非高校（如沈阳工程、南京工程、上海电力等）在本地电网招录通过率极高，择校时可重点关注电力行业老牌强校！"
+            else:
+                return "💡【电网总部梯队提示】：顶尖 985 电气毕业生是各省电力调度中心与电科院研发专家的首选储备人才。"
+
+        elif cat_name == "中国语言文学类":
+            return "💡【体制公文与教育提示】：中文核心竞争力在‘笔杆子’。体制内公文材料岗招录体量极大；同时考取教资证书走公立中小学语文教师编制是极具确定性的托底退路。"
+
+        elif cat_name in ["数学类", "物理学类", "天文学类", "力学类"]:
+            return "⚠️【学术耐受度提示】：纯自科类专业本科直接就业对口度低，大多需继续攻读硕士或博士，适合立志从事科研、高校讲师，或研究生阶段转金融工程/算法研究的考生。"
+
+        elif cat_name == "中医学类":
+            return "💡【老中医时间沉淀提示】：技能不随技术更新淘汰，越老越吃香，但前期需耐得住跟师抄方与长线轮转寂寞，基层社区与特色专科医院需求长期旺盛。"
+
+        return "💡【报考综合提示】：该专业属于稳健发展门类，建议结合自身兴趣特长，提早在大一期间明确考研深造或求职考编的发展主线。"
+
     def calculate_recommendations(self, user_profile, answers):
         """
         核心分层门控漏斗推荐算法 (HGFA 2.0)
@@ -319,15 +365,27 @@ class GaokaoRecommendEngine:
             # ----------------------------------------------------
             if not is_open_explore:
                 if "大厂高薪与硬核研发" in target_goal:
-                    if hardness >= 0.88:
+                    if cat in ["马克思主义理论类", "哲学类", "历史学类", "社会学类"]:
+                        cat_score -= 100.0  # 大厂完全无对口业务研发岗，强力熔断脱离大厂现实的推荐
+                    elif hardness >= 0.88:
                         cat_score += 35.0
                     elif hardness >= 0.75:
                         cat_score += 20.0
+                    elif not has_physics:
+                        # 文科生渴望大厂研发/私企高薪，精准对标互联网产品运营、交互设计与数据分析
+                        if cat in ["新闻传播学类", "设计学类", "管理科学与工程类"]:
+                            cat_score += 32.0
+                        elif cat in ["外国语言文学类", "法学类"]:
+                            cat_score += 15.0
+                        else:
+                            cat_score -= 25.0
                     elif cluster in ["文史哲传媒", "法政社科"]:
-                        cat_score -= 20.0
+                        cat_score -= 25.0
                 elif "体制内考公考编" in target_goal:
-                    if cat in ["中国语言文学类", "法学类", "马克思主义理论类", "电气类", "计算机类", "公共管理类"]:
+                    if cat in ["中国语言文学类", "法学类", "马克思主义理论类", "电气类", "计算机类", "公共管理类", "教育学类"]:
                         cat_score += 35.0
+                    elif cat in ["航空航天类", "天文学类", "兵器类"]:
+                        cat_score -= 15.0  # 科研院所为主，普通公务员招考极少
                     elif cluster in ["传统/重工业工科", "艺术设计"]:
                         cat_score -= 15.0
                 elif "学术科研与本硕博深造" in target_goal:
@@ -340,6 +398,19 @@ class GaokaoRecommendEngine:
                         cat_score += 45.0
                     else:
                         cat_score -= 25.0
+
+            # ----------------------------------------------------
+            # 4.1 位次与分数层级耐受度 (Tier Risk Calibration)
+            # ----------------------------------------------------
+            user_score = user_profile.get("score", 600)
+            user_rank_pct = user_profile.get("rank_pct", 10.0)
+            # 普通二本/中低分位次（rank_pct >= 18% 或 score < 560）且工薪家庭：
+            # 对极度看重名校光环与资源的纯金融与纯理论类适度降权，托举硬技能工科、管科与带编师范
+            if (user_rank_pct >= 18.0 or user_score < 560) and ("工薪" in family_econ or "急需本科" in family_econ):
+                if cat in ["金融学类", "经济与贸易类", "天文学类"]:
+                    cat_score -= 32.0  # 二本工薪适度避让极度依赖名校光环与资源的纯金融
+                elif cat in ["电气类", "自动化类", "机械类", "计算机类", "管理科学与工程类", "教育学类"]:
+                    cat_score += 12.0
 
             # ----------------------------------------------------
             # 5. 12 道微观情境评测平衡打分体系
@@ -525,6 +596,7 @@ class GaokaoRecommendEngine:
 
             top_schools = self.get_top_schools(cat_name)
             recommend_reason = self._generate_recommend_reason(cat_name, user_profile, answers, info)
+            tier_alert = self._generate_tier_alert(cat_name, user_profile)
 
             results.append({
                 "rank": rank_emojis[idx] if idx < len(rank_emojis) else "⭐",
@@ -534,9 +606,11 @@ class GaokaoRecommendEngine:
                 "hardness_label": info.get("hardness_label", "工科技术"),
                 "utility": info.get("utility_tier", "高实用性"),
                 "degree": info.get("degree_requirement", "本硕皆宜"),
+                "tier_risk": info.get("tier_risk", "本硕皆宜/梯队分化"),
                 "warning": info.get("pitfall_warning", ""),
                 "insight": info.get("reality_insight", ""),
                 "recommend_reason": recommend_reason,
+                "tier_alert": tier_alert,
                 "marketing_myth": info.get("marketing_myth", "招生简章复合型领军精英"),
                 "truth_unfiltered": info.get("truth_unfiltered", "真实工作日常实录"),
                 "civil_service_tag": info.get("civil_service_tag", "体制内招录属性"),

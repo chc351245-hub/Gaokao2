@@ -30,8 +30,8 @@ def load_pitfall_encyclopedia():
 # 页面基础配置与高阶美学动效样式
 # ============================================================================
 st.set_page_config(
-    page_title="高考志愿智能规划与决策系统 2.0",
-    page_icon="🎓",
+    page_title="航向未来 · 高考专业天赋解码与现实导航系统",
+    page_icon="🧭",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -68,24 +68,56 @@ html, body, [class*="css"] {
 
 /* 顶部 Hero 渐变横幅 */
 .hero-box {
-    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #4F46E5 100%);
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 45%, #2563EB 85%, #3B82F6 100%);
     border-radius: 20px;
-    padding: 30px 36px;
+    padding: 32px 38px;
     color: #FFFFFF;
     margin-bottom: 24px;
-    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 12px 30px -6px rgba(30, 58, 138, 0.35);
     animation: fadeInUp 0.35s ease-out;
 }
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #E0E7FF;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
 .hero-title {
-    font-size: 27px;
+    font-size: 29px;
     font-weight: 800;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     letter-spacing: -0.5px;
+    line-height: 1.3;
 }
 .hero-subtitle {
     font-size: 14.5px;
-    opacity: 0.92;
+    color: #E2E8F0;
     line-height: 1.6;
+    margin-bottom: 14px;
+}
+.hero-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+.feature-pill {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: #F8FAFC;
+    font-weight: 600;
 }
 
 /* 步骤进度条胶囊容器 */
@@ -318,9 +350,16 @@ if "quiz_answers" not in st.session_state:
 st.markdown(
     """
     <div class="hero-box">
-        <div class="hero-title">🎓 高考志愿智能规划与决策系统 2.0</div>
+        <div class="hero-badge">⚡ 2026 新高考专属 · 穿透招生包装 · 让底层天赋自然浮现</div>
+        <div class="hero-title">🧭 航向未来 · 高考专业天赋解码与现实导航系统</div>
         <div class="hero-subtitle">
-            基于真实就业大数据 · 招生简章包装打假 (Truth Filter) · 严格工科硬度分级 · 12 道微观实战情境直击底层天赋
+            不问抽象空话，用 12 个真实微观生活冲突直击动手韧性与抗压底线；深度穿透 94 个大类真实现实生态，让契合你的最优职业路径清晰呈现。
+        </div>
+        <div class="hero-features">
+            <span class="feature-pill">🛡️ 94 大类招生包装打假</span>
+            <span class="feature-pill">🧭 12 道微观生活情境评测</span>
+            <span class="feature-pill">🔄 35 个孪生备选对标台</span>
+            <span class="feature-pill">🚨 19 大下行赛道全景避雷</span>
         </div>
     </div>
     """,
@@ -833,6 +872,17 @@ elif st.session_state.current_step == 3:
             """,
             unsafe_allow_html=True
         )
+
+        # 底部院校层级实情与报考提示（给考生清晰标注现实情况）
+        if c.get("tier_alert"):
+            st.markdown(
+                f"""
+                <div style="margin-top:10px;font-size:12.5px;color:#92400E;background:#FFFBEB;border-left:4px solid #F59E0B;padding:9px 12px;border-radius:0 8px 8px 0;line-height:1.5;">
+                    {c['tier_alert']}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         st.markdown("</div>", unsafe_allow_html=True)
 
