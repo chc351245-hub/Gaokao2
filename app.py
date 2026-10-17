@@ -14,10 +14,52 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import json
 from pathlib import Path
 from core.recommend_engine import engine
+
+def scroll_to_top():
+    """触发浏览器主视口平滑或瞬间置顶，彻底解决多题长页面切换后的滚动滞留问题"""
+    components.html(
+        """
+        <script>
+            function performScroll() {
+                try {
+                    const parentDoc = window.parent.document;
+                    // 1. 定位页面顶部锚点
+                    const anchor = parentDoc.getElementById('page-top-anchor');
+                    if (anchor && anchor.scrollIntoView) {
+                        anchor.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    }
+                    // 2. 兼容各种 Streamlit 版本的滚动容器选择器
+                    const containers = [
+                        parentDoc.querySelector('section.main'),
+                        parentDoc.querySelector('.stMain'),
+                        parentDoc.querySelector('[data-testid="stMain"]'),
+                        parentDoc.querySelector('[data-testid="stAppViewContainer"]'),
+                        parentDoc.documentElement,
+                        parentDoc.body
+                    ];
+                    for (const el of containers) {
+                        if (el && el.scrollTop !== undefined) {
+                            el.scrollTop = 0;
+                        }
+                    }
+                    window.parent.scrollTo(0, 0);
+                } catch (e) {
+                    window.scrollTo(0, 0);
+                }
+            }
+            performScroll();
+            setTimeout(performScroll, 50);
+            setTimeout(performScroll, 150);
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
 
 def load_pitfall_encyclopedia():
     p = Path(__file__).resolve().parent / "data" / "pitfall_majors_encyclopedia.json"
@@ -345,6 +387,19 @@ if "quiz_answers" not in st.session_state:
     }
 
 # ============================================================================
+# 顶部锚点与自动置顶控制
+# ============================================================================
+st.markdown('<div id="page-top-anchor" style="position:absolute;top:0;left:0;height:0;width:0;opacity:0;"></div>', unsafe_allow_html=True)
+
+if "last_rendered_step" not in st.session_state:
+    st.session_state.last_rendered_step = st.session_state.current_step
+
+if st.session_state.current_step != st.session_state.last_rendered_step or st.session_state.get("need_scroll_top", False):
+    scroll_to_top()
+    st.session_state.last_rendered_step = st.session_state.current_step
+    st.session_state.need_scroll_top = False
+
+# ============================================================================
 # 顶部 Hero Banner
 # ============================================================================
 st.markdown(
@@ -400,6 +455,7 @@ with st.sidebar:
     )
     if nav_step != st.session_state.current_step:
         st.session_state.current_step = nav_step
+        st.session_state.need_scroll_top = True
         st.rerun()
 
     st.markdown("---")
@@ -480,6 +536,7 @@ if st.session_state.current_step == 1:
                 st.warning("⚠️ 请至少选择 3 门新高考选考科目！已为你重置为默认组合【物理、化学、生物】。")
                 st.session_state.user_profile["subjects"] = ["物理", "化学", "生物"]
             st.session_state.current_step = 2
+            st.session_state.need_scroll_top = True
             st.rerun()
 
 # ============================================================================
@@ -656,10 +713,12 @@ elif st.session_state.current_step == 2:
     with c_btn1:
         if st.button("⬅ 返回第一步", use_container_width=True):
             st.session_state.current_step = 1
+            st.session_state.need_scroll_top = True
             st.rerun()
     with c_btn2:
         if st.button("动态计算并查看推荐大屏 ➔", type="primary", use_container_width=True):
             st.session_state.current_step = 3
+            st.session_state.need_scroll_top = True
             st.rerun()
 
 # ============================================================================
@@ -891,4 +950,5 @@ elif st.session_state.current_step == 3:
     with c_back1:
         if st.button("⬅ 重新调整问卷与选项", use_container_width=True):
             st.session_state.current_step = 2
+            st.session_state.need_scroll_top = True
             st.rerun()
