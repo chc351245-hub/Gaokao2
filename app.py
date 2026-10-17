@@ -103,17 +103,24 @@ st.set_page_config(
 
 CUSTOM_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap');
 
+/* 全局字体与科技感底色 */
 html, body, [class*="css"] {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* 入场微动效 */
+/* 页面背景微光科技氛围 */
+.stApp {
+    background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.07) 0%, rgba(14, 165, 233, 0.03) 45%, transparent 75%), #F8FAFC;
+}
+
+/* 高阶关键帧动效体系 */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(14px);
+        transform: translateY(18px);
     }
     to {
         opacity: 1;
@@ -121,291 +128,416 @@ html, body, [class*="css"] {
     }
 }
 
-@keyframes pulseGlow {
-    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-    70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+@keyframes heroGlowPulse {
+    0% {
+        box-shadow: 0 16px 40px -10px rgba(30, 58, 138, 0.4), 0 0 0 1px rgba(96, 165, 250, 0.25) inset;
+    }
+    50% {
+        box-shadow: 0 20px 50px -8px rgba(37, 99, 235, 0.55), 0 0 0 1px rgba(56, 189, 248, 0.45) inset;
+    }
+    100% {
+        box-shadow: 0 16px 40px -10px rgba(30, 58, 138, 0.4), 0 0 0 1px rgba(96, 165, 250, 0.25) inset;
+    }
 }
 
-.fade-in {
-    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes beaconPulse {
+    0% { transform: scale(0.95); opacity: 0.85; }
+    50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 6px #38BDF8); }
+    100% { transform: scale(0.95); opacity: 0.85; }
 }
 
-/* 顶部 Hero 渐变横幅 */
+/* 顶部全息深空 Hero 横幅 */
 .hero-box {
-    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 45%, #2563EB 85%, #3B82F6 100%);
-    border-radius: 20px;
-    padding: 32px 38px;
+    background: linear-gradient(135deg, #060A12 0%, #0B132B 35%, #1C2E68 70%, #1D4ED8 100%);
+    border-radius: 24px;
+    padding: 36px 42px;
     color: #FFFFFF;
     margin-bottom: 24px;
-    box-shadow: 0 12px 30px -6px rgba(30, 58, 138, 0.35);
-    animation: fadeInUp 0.35s ease-out;
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1), heroGlowPulse 6s infinite ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+.hero-box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.8), transparent);
 }
 .hero-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: #E0E7FF;
-    padding: 4px 12px;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: #BAE6FD;
+    padding: 5px 14px;
     border-radius: 999px;
     font-size: 12px;
     font-weight: 700;
-    margin-bottom: 12px;
-    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    letter-spacing: 0.8px;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    animation: beaconPulse 3.5s infinite ease-in-out;
 }
 .hero-title {
-    font-size: 29px;
+    font-size: 31px;
     font-weight: 800;
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
-    line-height: 1.3;
+    margin-bottom: 10px;
+    letter-spacing: -0.6px;
+    line-height: 1.25;
+    background: linear-gradient(135deg, #FFFFFF 30%, #BAE6FD 80%, #7DD3FC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 .hero-subtitle {
     font-size: 14.5px;
-    color: #E2E8F0;
-    line-height: 1.6;
-    margin-bottom: 14px;
+    color: #CBD5E1;
+    line-height: 1.65;
+    margin-bottom: 16px;
+    max-width: 950px;
 }
 .hero-features {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 12px;
 }
 .feature-pill {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 8px;
-    padding: 4px 10px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(147, 197, 253, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 999px;
+    padding: 5px 13px;
     font-size: 12px;
-    color: #F8FAFC;
+    color: #F1F5F9;
     font-weight: 600;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.feature-pill:hover {
+    background: rgba(30, 58, 138, 0.6);
+    border-color: #38BDF8;
+    color: #38BDF8;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+    transform: translateY(-2px);
 }
 
-/* 步骤进度条胶囊容器 */
+/* 步骤进度条 HUD 轨道 */
 .step-progress-bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 24px;
-    background: #F3F4F6;
-    border-radius: 14px;
+    margin-bottom: 26px;
+    background: rgba(241, 245, 249, 0.85);
+    border: 1px solid #E2E8F0;
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
     padding: 6px;
-    gap: 8px;
+    gap: 10px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 .step-capsule {
     flex: 1;
     text-align: center;
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 12px 16px;
+    border-radius: 12px;
     font-size: 13.5px;
-    font-weight: 600;
-    color: #6B7280;
-    transition: all 0.25s ease;
+    font-weight: 700;
+    color: #64748B;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 .step-capsule.active {
-    background: #FFFFFF;
-    color: #1E3A8A;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    color: #FFFFFF !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transform: translateY(-1px);
 }
 .step-capsule.completed {
-    background: #E0E7FF;
+    background: #EEF2FF;
     color: #3730A3;
+    border: 1px solid #C7D2FE;
 }
 
 /* 模块分段标题 */
 .step-header {
-    font-size: 19px;
-    font-weight: 700;
-    color: #111827;
-    border-left: 4px solid #2563EB;
-    padding-left: 12px;
-    margin: 20px 0 16px 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #0F172A;
+    border-left: 5px solid #2563EB;
+    padding-left: 14px;
+    margin: 22px 0 18px 0;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.3px;
 }
 
-/* 题目卡片容器 */
-.question-card {
+/* 12道微观情境评测 — 科技座舱级 Radio 选项卡美化 */
+div[data-testid="stRadio"] {
     background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 18px 22px;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    animation: fadeInUp 0.3s ease-out;
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
 }
-.question-card:hover {
+div[data-testid="stRadio"]:hover {
     border-color: #93C5FD;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 10px 24px -4px rgba(37, 99, 235, 0.1);
 }
-.question-badge {
-    display: inline-block;
-    padding: 2px 8px;
+div[data-testid="stRadio"] > label {
+    font-size: 15.5px !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    margin-bottom: 10px !important;
+    line-height: 1.5 !important;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] {
+    gap: 9px;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] > label {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
     background: #EFF6FF;
-    color: #2563EB;
-    border-radius: 6px;
-    font-size: 11.5px;
-    font-weight: 700;
-    margin-bottom: 6px;
+    border-color: #60A5FA;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
 }
-.question-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #1F2937;
-    margin-bottom: 10px;
-    line-height: 1.5;
+div[data-testid="stRadio"] div[role="radiogroup"] > label[data-checked="true"],
+div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
+    background: linear-gradient(135deg, #EFF6FF 0%, #E0E7FF 100%) !important;
+    border-color: #2563EB !important;
+    box-shadow: 0 0 0 1px #2563EB, 0 6px 16px rgba(37, 99, 235, 0.18) !important;
 }
 
-/* 专业推荐卡片 */
+/* 终极专业推荐卡片 — 毛玻璃与等离子边框 */
 .major-card {
     background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 22px;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 26px 30px;
+    margin-bottom: 24px;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
     animation: fadeInUp 0.4s ease-out;
 }
+.major-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, #2563EB 0%, #06B6D4 50%, #8B5CF6 100%);
+    border-radius: 6px 0 0 6px;
+}
 .major-card:hover {
+    transform: translateY(-6px) scale(1.004);
     border-color: #60A5FA;
-    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.12);
-    transform: translateY(-3px);
+    box-shadow: 0 20px 42px -10px rgba(37, 99, 235, 0.22), 0 0 0 1px rgba(59, 130, 246, 0.2);
 }
 
-/* 标签徽章 */
+/* 高阶等离子能量徽章 (Mono风格) */
 .badge-tag {
     display: inline-block;
-    padding: 4px 10px;
-    border-radius: 7px;
+    padding: 4px 11px;
+    border-radius: 8px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     margin-right: 6px;
     margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace, sans-serif;
+    transition: all 0.2s ease;
 }
-.badge-hard { background: #EEF2FF; color: #3730A3; border: 1px solid #C7D2FE; }
-.badge-warn { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
-.badge-good { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
-.badge-info { background: #F0F9FF; color: #075985; border: 1px solid #BAE6FD; }
-.badge-purple { background: #FAF5FF; color: #6B21A8; border: 1px solid #E9D5FF; }
+.badge-hard { background: #EEF2FF; color: #3730A3; border: 1px solid #818CF8; box-shadow: 0 0 8px rgba(129, 140, 248, 0.18); }
+.badge-warn { background: #FEF3C7; color: #92400E; border: 1px solid #FBBF24; box-shadow: 0 0 8px rgba(251, 191, 36, 0.18); }
+.badge-good { background: #ECFDF5; color: #065F46; border: 1px solid #34D399; box-shadow: 0 0 8px rgba(52, 211, 153, 0.18); }
+.badge-info { background: #F0F9FF; color: #0369A1; border: 1px solid #38BDF8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.18); }
+.badge-purple { background: #FAF5FF; color: #6B21A8; border: 1px solid #C084FC; box-shadow: 0 0 8px rgba(192, 132, 252, 0.18); }
 
-/* 专属量身推荐理由容器 */
+/* 专属量身推荐理由 — AI 神经解码舱 */
 .reason-box {
-    background: #EFF6FF;
-    border-left: 4px solid #2563EB;
-    border-radius: 0 10px 10px 0;
-    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(239, 246, 255, 0.85) 0%, rgba(240, 249, 255, 0.95) 100%);
+    border-left: 5px solid #0284C7;
+    border-top: 1px solid rgba(186, 230, 253, 0.5);
+    border-right: 1px solid rgba(186, 230, 253, 0.5);
+    border-bottom: 1px solid rgba(186, 230, 253, 0.5);
+    border-radius: 0 14px 14px 0;
+    padding: 13px 18px;
     margin-top: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-size: 13.5px;
-    color: #1E3A8A;
-    line-height: 1.6;
+    color: #0C4A6E;
+    line-height: 1.65;
+    box-shadow: 0 2px 10px rgba(2, 132, 199, 0.08);
 }
 
-/* 招生包装打假 Truth Filter 容器 */
+/* 招生包装打假 Truth Filter — 赛博打假扫描室 */
 .truth-box {
-    background: #FFFBEB;
-    border-left: 4px solid #F59E0B;
-    border-radius: 0 10px 10px 0;
-    padding: 12px 16px;
+    background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+    border-left: 5px solid #D97706;
+    border-radius: 0 14px 14px 0;
+    padding: 14px 18px;
     margin-top: 12px;
     font-size: 13.5px;
-    line-height: 1.6;
+    line-height: 1.65;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
 }
 .truth-label {
-    font-weight: 700;
-    color: #B45309;
-    margin-bottom: 4px;
+    font-weight: 800;
+    color: #92400E;
+    margin-bottom: 6px;
     display: flex;
     align-items: center;
     gap: 6px;
+    font-size: 14px;
 }
 .myth-text {
-    color: #92400E;
+    color: #B91C1C;
     text-decoration: line-through;
-    opacity: 0.85;
-}
-.fact-text {
-    color: #78350F;
+    background: rgba(254, 226, 226, 0.65);
+    padding: 2px 7px;
+    border-radius: 5px;
     font-weight: 600;
 }
+.fact-text {
+    color: #14532D;
+    font-weight: 700;
+    background: rgba(220, 252, 231, 0.65);
+    padding: 2px 7px;
+    border-radius: 5px;
+}
 
-/* 行业洞察底栏 */
+/* 行业真实生态底栏 */
 .insight-box {
     background: #F8FAFC;
-    border-left: 4px solid #2563EB;
-    border-radius: 0 10px 10px 0;
-    padding: 12px 16px;
+    border-left: 5px solid #2563EB;
+    border-radius: 0 14px 14px 0;
+    padding: 13px 18px;
     margin-top: 10px;
     font-size: 13.5px;
     color: #334155;
-    line-height: 1.6;
+    line-height: 1.65;
+    border-top: 1px solid #F1F5F9;
+    border-bottom: 1px solid #F1F5F9;
+    border-right: 1px solid #F1F5F9;
 }
 
-/* 孪生备选对标台容器 */
+/* 孪生备选对标台 — 全息对接舱 */
 .sister-card-box {
-    background: #F0FDF4;
-    border: 1px solid #BBF7D0;
-    border-left: 4px solid #16A34A;
-    border-radius: 0 10px 10px 0;
-    padding: 14px 16px;
-    margin-top: 12px;
-    margin-bottom: 8px;
+    background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+    border: 1px solid #A7F3D0;
+    border-left: 5px solid #059669;
+    border-radius: 0 14px 14px 0;
+    padding: 16px 20px;
+    margin-top: 14px;
+    margin-bottom: 10px;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.65;
+    box-shadow: 0 4px 18px -3px rgba(5, 150, 105, 0.12);
 }
 .sister-header {
-    font-weight: 700;
-    color: #166534;
-    font-size: 14px;
-    margin-bottom: 6px;
+    font-weight: 800;
+    color: #065F46;
+    font-size: 14.5px;
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 .sister-item {
     background: #FFFFFF;
-    border: 1px solid #DCFCE7;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-top: 8px;
+    border: 1px solid #D1FAE5;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 10px;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+.sister-item:hover {
+    border-color: #34D399;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.12);
+    transform: translateX(4px);
 }
 
 /* 避坑拦截抽屉 */
 .intercept-box {
-    background: #FEF2F2;
+    background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
     border: 1px solid #FCA5A5;
-    border-radius: 12px;
-    padding: 14px 18px;
-    margin-bottom: 18px;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
     animation: fadeInUp 0.3s ease-out;
 }
 
-/* 屏幕右下角悬浮置顶按钮 */
+/* 全局主次按钮科技化升级 */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 55%, #06B6D4 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    padding: 10px 22px !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.38) !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.stButton > button[kind="primary"]:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.52) !important;
+}
+.stButton > button[kind="secondary"] {
+    border-radius: 12px !important;
+    border: 1px solid #CBD5E1 !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+.stButton > button[kind="secondary"]:hover {
+    border-color: #3B82F6 !important;
+    color: #2563EB !important;
+    background: #EFF6FF !important;
+    transform: translateY(-1px) !important;
+}
+
+/* 屏幕右下角悬浮置顶按钮 (等离子流光浮动) */
 .float-scroll-btn {
     position: fixed;
-    bottom: 26px;
-    right: 28px;
+    bottom: 28px;
+    right: 30px;
     z-index: 999999;
-    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #2563EB 100%);
     color: #FFFFFF !important;
     text-decoration: none !important;
     padding: 10px 18px;
     border-radius: 999px;
     font-size: 13px;
     font-weight: 700;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 8px 24px rgba(30, 58, 138, 0.45), 0 0 0 1px rgba(96, 165, 250, 0.3) inset;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.25s ease-in-out;
 }
 .float-scroll-btn:hover {
-    background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.55);
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #06B6D4 100%);
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.6), 0 0 16px rgba(6, 182, 212, 0.5);
     color: #FFFFFF !important;
 }
 </style>
@@ -848,10 +980,10 @@ elif st.session_state.current_step == 3:
         st.markdown(
             f"""
             <div class="major-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:12px;gap:8px;">
-                    <div>
-                        <span style="font-size:23px;font-weight:800;color:#111827;">{c['rank']} {c['name']}</span>
-                        <span style="font-size:13px;color:#6B7280;margin-left:8px;">(综合匹配评分: {c['score']})</span>
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px;gap:8px;">
+                    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+                        <span style="font-size:24px;font-weight:800;color:#0F172A;letter-spacing:-0.5px;">{c['rank']} {c['name']}</span>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(37,99,235,0.08);color:#2563EB;border:1px solid rgba(37,99,235,0.25);padding:3px 10px;border-radius:999px;font-weight:700;">⚡ 匹配度 {c['score']} 分</span>
                     </div>
                     <div>
                         <span class="badge-tag badge-hard">🛠️ {c['hardness_label']} (硬度 {c['hardness']})</span>
@@ -867,8 +999,8 @@ elif st.session_state.current_step == 3:
         # 考公真实属性标签
         st.markdown(
             f"""
-            <div style="margin-bottom:8px;font-size:13px;color:#4B5563;">
-                🏛️ <b>体制内考公考编真实属性</b>: <span style="font-weight:600;color:#1E3A8A;">{c['civil_service_tag']}</span>
+            <div style="margin-bottom:10px;font-size:13px;color:#475569;">
+                🏛️ <b>体制内考公考编真实属性</b>: <span style="font-weight:700;color:#1E3A8A;background:#EEF2FF;padding:2px 8px;border-radius:6px;border:1px solid #C7D2FE;">{c['civil_service_tag']}</span>
             </div>
             """,
             unsafe_allow_html=True
@@ -891,11 +1023,11 @@ elif st.session_state.current_step == 3:
             <div class="truth-box">
                 <div class="truth-label">🔥 【招生简章包装打假 / 谎言滤镜】</div>
                 <div style="margin-bottom:4px;">
-                    <span style="font-weight:600;color:#92400E;">宣称包装: </span>
+                    <span style="font-weight:700;color:#92400E;">宣称包装: </span>
                     <span class="myth-text">“{c['marketing_myth']}”</span>
                 </div>
                 <div>
-                    <span style="font-weight:600;color:#166534;">真实日常打假: </span>
+                    <span style="font-weight:700;color:#166534;">真实日常打假: </span>
                     <span class="fact-text">{c['truth_unfiltered']}</span>
                 </div>
             </div>
@@ -919,20 +1051,20 @@ elif st.session_state.current_step == 3:
             for s in c["sister_benchmarks"][:2]:
                 sisters_html += f"""
                 <div class="sister-item">
-                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:4px;">
-                        <span style="font-weight:700;font-size:13.5px;color:#166534;">🔄 孪生对标：{s['sister_name']}</span>
-                        <span style="background:#DCFCE7;color:#15803D;font-weight:600;font-size:11.5px;padding:2px 8px;border-radius:6px;">{s['relation_tag']}</span>
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:5px;">
+                        <span style="font-weight:800;font-size:14px;color:#166534;">🔄 孪生对标：{s['sister_name']}</span>
+                        <span style="background:#DCFCE7;color:#15803D;font-weight:700;font-size:11.5px;padding:2px 8px;border-radius:6px;border:1px solid #86EFAC;">{s['relation_tag']}</span>
                     </div>
-                    <div style="font-size:12px;color:#374151;margin-bottom:3px;">
-                        📊 <b>录取分差预估</b>: <span style="color:#B45309;font-weight:600;">{s['score_diff']}</span>
+                    <div style="font-size:12.5px;color:#374151;margin-bottom:4px;">
+                        📊 <b>录取分差预估</b>: <span style="color:#B45309;font-weight:700;">{s['score_diff']}</span>
                     </div>
-                    <div style="font-size:12px;color:#1F2937;margin-bottom:3px;">
+                    <div style="font-size:12.5px;color:#1F2937;margin-bottom:4px;">
                         ✅ <b>对标优势</b>: {s['pros']}
                     </div>
-                    <div style="font-size:12px;color:#4B5563;margin-bottom:4px;">
+                    <div style="font-size:12.5px;color:#4B5563;margin-bottom:5px;">
                         ⚠️ <b>现实代价</b>: {s['cons']}
                     </div>
-                    <div style="font-size:12px;color:#1E3A8A;background:#F0FDF4;padding:6px 10px;border-radius:6px;border:1px dashed #86EFAC;">
+                    <div style="font-size:12px;color:#1E3A8A;background:#F0FDF4;padding:7px 12px;border-radius:8px;border:1px dashed #86EFAC;line-height:1.5;">
                         🧭 <b>考生报考分流建议</b>: {s['verdict']}
                     </div>
                 </div>
@@ -941,7 +1073,7 @@ elif st.session_state.current_step == 3:
                 f"""
                 <div class="sister-card-box">
                     <div class="sister-header">🔄 【孪生备选对标台 / 考生自主分流选择】</div>
-                    <div style="font-size:12px;color:#15803D;margin-bottom:4px;">
+                    <div style="font-size:12.5px;color:#15803D;margin-bottom:6px;">
                         💡 <b>专业不应非此即彼，把选择权交给你</b>：若你对该大类感兴趣但担忧分数过高、或追求不同变现路径，可对比以下孪生备选赛道：
                     </div>
                     {sisters_html}
@@ -952,16 +1084,16 @@ elif st.session_state.current_step == 3:
 
         # 核心细分专业
         if c.get("majors") and len(c["majors"]) > 0:
-            st.markdown("<div style='margin-top:14px;font-size:13.5px;'><strong>🔬 核心细分推荐专业：</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top:16px;font-size:14px;'><strong>🔬 核心细分推荐专业：</strong></div>", unsafe_allow_html=True)
             m_cols = st.columns(len(c["majors"]))
             for idx, m in enumerate(c["majors"]):
                 with m_cols[idx]:
                     st.markdown(
                         f"""
-                        <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:10px 12px;height:100%;">
-                            <div style="font-weight:700;color:#1E3A8A;font-size:13.5px;">{m['name']}</div>
-                            <div style="font-size:11px;color:#9CA3AF;margin-bottom:3px;">代码: {m['code']}</div>
-                            <div style="font-size:12px;color:#4B5563;">{m['desc']}</div>
+                        <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:12px 14px;height:100%;box-shadow:0 2px 6px rgba(0,0,0,0.02);transition:all 0.2s ease;">
+                            <div style="font-weight:800;color:#1E3A8A;font-size:14px;">{m['name']}</div>
+                            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#64748B;margin-bottom:4px;">代码: {m['code']}</div>
+                            <div style="font-size:12px;color:#475569;line-height:1.5;">{m['desc']}</div>
                         </div>
                         """,
                         unsafe_allow_html=True
@@ -974,9 +1106,9 @@ elif st.session_state.current_step == 3:
 
         st.markdown(
             f"""
-            <div style="margin-top:12px;font-size:13px;color:#374151;display:flex;justify-content:space-between;flex-wrap:wrap;background:#F8FAFC;padding:8px 12px;border-radius:8px;">
-                <div>🏛️ <b>第四轮学科评估顶尖代表院校</b>: <span style="font-weight:600;color:#1E3A8A;">{top_schools_str}</span></div>
-                <div>🎯 <b>结合位次 (前{user_rank}%) 报考策略</b>: <span style="font-weight:700;color:#2563EB;">{tier_tip}</span></div>
+            <div style="margin-top:14px;font-size:13px;color:#334155;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background:linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);border:1px solid #E2E8F0;padding:10px 14px;border-radius:10px;gap:8px;">
+                <div>🏛️ <b>第四轮学科评估顶尖代表院校</b>: <span style="font-weight:700;color:#1E3A8A;">{top_schools_str}</span></div>
+                <div>🎯 <b>结合位次 (前{user_rank}%) 报考策略</b>: <span style="font-weight:800;color:#2563EB;background:rgba(37,99,235,0.08);padding:2px 8px;border-radius:6px;">{tier_tip}</span></div>
             </div>
             """,
             unsafe_allow_html=True
@@ -986,7 +1118,7 @@ elif st.session_state.current_step == 3:
         if c.get("tier_alert"):
             st.markdown(
                 f"""
-                <div style="margin-top:10px;font-size:12.5px;color:#92400E;background:#FFFBEB;border-left:4px solid #F59E0B;padding:9px 12px;border-radius:0 8px 8px 0;line-height:1.5;">
+                <div style="margin-top:12px;font-size:13px;color:#92400E;background:linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);border-left:5px solid #F59E0B;padding:12px 16px;border-radius:0 12px 12px 0;line-height:1.6;box-shadow:0 2px 8px rgba(245,158,11,0.08);">
                     {c['tier_alert']}
                 </div>
                 """,
