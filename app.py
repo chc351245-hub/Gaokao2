@@ -111,20 +111,31 @@ html, body, [class*="css"] {
     -webkit-font-smoothing: antialiased;
 }
 
-/* 页面背景微光科技氛围 */
+/* 页面背景微光科技氛围 + 蓝图网格脉动 */
 .stApp {
-    background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.07) 0%, rgba(14, 165, 233, 0.03) 45%, transparent 75%), #F8FAFC;
+    background-color: #F8FAFC;
+    background-image: 
+        radial-gradient(circle at 50% -10%, rgba(37, 99, 235, 0.12) 0%, rgba(14, 165, 233, 0.05) 45%, transparent 75%),
+        linear-gradient(rgba(226, 232, 240, 0.45) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(226, 232, 240, 0.45) 1px, transparent 1px);
+    background-size: 100% 100%, 36px 36px, 36px 36px;
+    background-position: 0 0, -1px -1px, -1px -1px;
 }
 
-/* 高阶关键帧动效体系 */
-@keyframes fadeInUp {
-    from {
+/* 高阶光影聚焦与阶梯滑入动效体系 (Optical Blur & Spring Cascading) */
+@keyframes cyberEntrance {
+    0% {
         opacity: 0;
-        transform: translateY(18px);
+        transform: translateY(28px) scale(0.97);
+        filter: blur(6px);
     }
-    to {
+    60% {
+        filter: blur(0.5px);
+    }
+    100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
     }
 }
 
@@ -133,7 +144,7 @@ html, body, [class*="css"] {
         box-shadow: 0 16px 40px -10px rgba(30, 58, 138, 0.4), 0 0 0 1px rgba(96, 165, 250, 0.25) inset;
     }
     50% {
-        box-shadow: 0 20px 50px -8px rgba(37, 99, 235, 0.55), 0 0 0 1px rgba(56, 189, 248, 0.45) inset;
+        box-shadow: 0 22px 55px -8px rgba(37, 99, 235, 0.6), 0 0 0 1px rgba(56, 189, 248, 0.5) inset;
     }
     100% {
         box-shadow: 0 16px 40px -10px rgba(30, 58, 138, 0.4), 0 0 0 1px rgba(96, 165, 250, 0.25) inset;
@@ -141,39 +152,51 @@ html, body, [class*="css"] {
 }
 
 @keyframes beaconPulse {
-    0% { transform: scale(0.95); opacity: 0.85; }
-    50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 6px #38BDF8); }
-    100% { transform: scale(0.95); opacity: 0.85; }
+    0% { transform: scale(0.92); opacity: 0.8; filter: drop-shadow(0 0 4px #06B6D4); }
+    50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 10px #38BDF8); }
+    100% { transform: scale(0.92); opacity: 0.8; filter: drop-shadow(0 0 4px #06B6D4); }
+}
+
+@keyframes scannerPass {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+}
+
+@keyframes borderGlowSweep {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* 顶部全息深空 Hero 横幅 */
 .hero-box {
-    background: linear-gradient(135deg, #060A12 0%, #0B132B 35%, #1C2E68 70%, #1D4ED8 100%);
+    background: linear-gradient(135deg, #050814 0%, #0B132B 35%, #1C2E68 70%, #1D4ED8 100%);
     border-radius: 24px;
     padding: 36px 42px;
     color: #FFFFFF;
     margin-bottom: 24px;
-    border: 1px solid rgba(96, 165, 250, 0.3);
-    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1), heroGlowPulse 6s infinite ease-in-out;
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    animation: cyberEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) both, heroGlowPulse 6s infinite ease-in-out;
     position: relative;
     overflow: hidden;
 }
-.hero-box::after {
+.hero-box::before {
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.8), transparent);
+    left: -100%;
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #38BDF8, #818CF8, transparent);
+    animation: scannerPass 3.6s infinite linear;
 }
 .hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(15, 23, 42, 0.65);
+    background: rgba(15, 23, 42, 0.7);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.45);
     color: #BAE6FD;
     padding: 5px 14px;
     border-radius: 999px;
@@ -208,8 +231,8 @@ html, body, [class*="css"] {
     margin-top: 12px;
 }
 .feature-pill {
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid rgba(147, 197, 253, 0.25);
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(147, 197, 253, 0.3);
     backdrop-filter: blur(10px);
     border-radius: 999px;
     padding: 5px 13px;
@@ -220,10 +243,10 @@ html, body, [class*="css"] {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 .feature-pill:hover {
-    background: rgba(30, 58, 138, 0.6);
+    background: rgba(30, 58, 138, 0.65);
     border-color: #38BDF8;
     color: #38BDF8;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
     transform: translateY(-2px);
 }
 
@@ -232,13 +255,14 @@ html, body, [class*="css"] {
     display: flex;
     justify-content: space-between;
     margin-bottom: 26px;
-    background: rgba(241, 245, 249, 0.85);
+    background: rgba(241, 245, 249, 0.9);
     border: 1px solid #E2E8F0;
     backdrop-filter: blur(12px);
     border-radius: 16px;
     padding: 6px;
     gap: 10px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+    animation: cyberEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
 }
 .step-capsule {
     flex: 1;
@@ -277,9 +301,10 @@ html, body, [class*="css"] {
     display: flex;
     align-items: center;
     letter-spacing: -0.3px;
+    animation: cyberEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* 12道微观情境评测 — 科技座舱级 Radio 选项卡美化 */
+/* 12道微观情境评测 — 阶梯式科技座舱 Radio 选项卡 */
 div[data-testid="stRadio"] {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
@@ -289,7 +314,22 @@ div[data-testid="stRadio"] {
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
+    animation: cyberEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+/* 12道题阶梯式微延迟流式滑入 (Staggered Cascading Entrance) */
+div[data-testid="stRadio"]:nth-of-type(1) { animation-delay: 0.03s; }
+div[data-testid="stRadio"]:nth-of-type(2) { animation-delay: 0.07s; }
+div[data-testid="stRadio"]:nth-of-type(3) { animation-delay: 0.11s; }
+div[data-testid="stRadio"]:nth-of-type(4) { animation-delay: 0.15s; }
+div[data-testid="stRadio"]:nth-of-type(5) { animation-delay: 0.19s; }
+div[data-testid="stRadio"]:nth-of-type(6) { animation-delay: 0.23s; }
+div[data-testid="stRadio"]:nth-of-type(7) { animation-delay: 0.27s; }
+div[data-testid="stRadio"]:nth-of-type(8) { animation-delay: 0.31s; }
+div[data-testid="stRadio"]:nth-of-type(9) { animation-delay: 0.35s; }
+div[data-testid="stRadio"]:nth-of-type(10) { animation-delay: 0.39s; }
+div[data-testid="stRadio"]:nth-of-type(11) { animation-delay: 0.43s; }
+div[data-testid="stRadio"]:nth-of-type(12) { animation-delay: 0.47s; }
+
 div[data-testid="stRadio"]:hover {
     border-color: #93C5FD;
     box-shadow: 0 10px 24px -4px rgba(37, 99, 235, 0.1);
@@ -305,53 +345,161 @@ div[data-testid="stRadio"] div[role="radiogroup"] {
     gap: 9px;
 }
 div[data-testid="stRadio"] div[role="radiogroup"] > label {
+    position: relative;
     background: #F8FAFC;
     border: 1px solid #E2E8F0;
     border-radius: 12px;
-    padding: 12px 16px;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 12px 18px 12px 20px;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
+    overflow: hidden;
+}
+div[data-testid="stRadio"] div[role="radiogroup"] > label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 25%;
+    height: 50%;
+    width: 3.5px;
+    background: #38BDF8;
+    border-radius: 0 4px 4px 0;
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
     background: #EFF6FF;
     border-color: #60A5FA;
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+    transform: translateX(6px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.1);
+}
+div[data-testid="stRadio"] div[role="radiogroup"] > label:hover::before {
+    opacity: 1;
+    height: 70%;
+    top: 15%;
 }
 div[data-testid="stRadio"] div[role="radiogroup"] > label[data-checked="true"],
 div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
     background: linear-gradient(135deg, #EFF6FF 0%, #E0E7FF 100%) !important;
     border-color: #2563EB !important;
-    box-shadow: 0 0 0 1px #2563EB, 0 6px 16px rgba(37, 99, 235, 0.18) !important;
+    box-shadow: 0 0 0 1px #2563EB, 0 6px 18px rgba(37, 99, 235, 0.2) !important;
 }
 
-/* 终极专业推荐卡片 — 毛玻璃与等离子边框 */
+/* 量子全息神经元解码状态卡 (Step 3 专属) */
+.cyber-decode-card {
+    position: relative;
+    background: linear-gradient(135deg, #050814 0%, #0F172A 40%, #1E3A8A 100%);
+    border-radius: 20px;
+    padding: 24px 30px;
+    color: #FFFFFF;
+    margin-bottom: 24px;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 16px 36px -6px rgba(14, 165, 233, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    overflow: hidden;
+    animation: cyberEntrance 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.cyber-scanner-sweep {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.22), transparent);
+    transform: skewX(-25deg);
+    animation: scannerPass 3.2s infinite ease-in-out;
+    pointer-events: none;
+}
+.cyber-pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: #38BDF8;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px #38BDF8;
+    animation: beaconPulse 2s infinite ease-in-out;
+}
+.cyber-decode-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+.cyber-chip {
+    font-size: 12px;
+    font-weight: 600;
+    color: #E2E8F0;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 4px 12px;
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+.cyber-chip:hover {
+    border-color: #38BDF8;
+    color: #38BDF8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+/* 终极专业推荐卡片 — 阶梯滑入全息仓与机甲边角 HUD Bracket */
 .major-card {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 20px;
-    padding: 26px 30px;
-    margin-bottom: 24px;
+    padding: 28px 32px;
+    margin-bottom: 26px;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 22px -4px rgba(0, 0, 0, 0.05);
     position: relative;
     overflow: hidden;
-    animation: fadeInUp 0.4s ease-out;
+    animation: cyberEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+/* 卡片阶梯式滑入延迟 (Staggered Entrance) */
+.major-card:nth-of-type(1) { animation-delay: 0.08s; }
+.major-card:nth-of-type(2) { animation-delay: 0.18s; }
+.major-card:nth-of-type(3) { animation-delay: 0.28s; }
+.major-card:nth-of-type(4) { animation-delay: 0.38s; }
+.major-card:nth-of-type(5) { animation-delay: 0.48s; }
+
+/* 顶端全息流光激光线 */
 .major-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    width: 6px;
-    height: 100%;
-    background: linear-gradient(180deg, #2563EB 0%, #06B6D4 50%, #8B5CF6 100%);
-    border-radius: 6px 0 0 6px;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2563EB 0%, #06B6D4 50%, #8B5CF6 100%);
+    opacity: 0.85;
+    transition: all 0.3s ease;
+}
+/* 卡片右上角赛博机甲指示角标 HUD Bracket */
+.major-card::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 14px;
+    height: 14px;
+    border-top: 2px solid rgba(56, 189, 248, 0.4);
+    border-right: 2px solid rgba(56, 189, 248, 0.4);
+    border-top-right-radius: 6px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .major-card:hover {
-    transform: translateY(-6px) scale(1.004);
+    transform: translateY(-6px) scale(1.006);
     border-color: #60A5FA;
-    box-shadow: 0 20px 42px -10px rgba(37, 99, 235, 0.22), 0 0 0 1px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 22px 48px -10px rgba(37, 99, 235, 0.22), 0 0 0 1px rgba(56, 189, 248, 0.35);
+}
+.major-card:hover::before {
+    height: 4px;
+    opacity: 1;
+    box-shadow: 0 0 14px rgba(6, 182, 212, 0.6);
+}
+.major-card:hover::after {
+    width: 26px;
+    height: 26px;
+    border-color: #06B6D4;
+    box-shadow: 2px -2px 10px rgba(6, 182, 212, 0.5);
 }
 
 /* 高阶等离子能量徽章 (Mono风格) */
@@ -484,23 +632,25 @@ div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
     border-radius: 14px;
     padding: 16px 20px;
     margin-bottom: 20px;
-    animation: fadeInUp 0.3s ease-out;
+    animation: cyberEntrance 0.5s ease-out;
 }
 
 /* 全局主次按钮科技化升级 */
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 55%, #06B6D4 100%) !important;
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 45%, #2563EB 80%, #06B6D4 100%) !important;
+    background-size: 200% 200% !important;
     border: none !important;
     border-radius: 12px !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
-    padding: 10px 22px !important;
+    padding: 11px 24px !important;
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.38) !important;
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    animation: borderGlowSweep 6s ease infinite !important;
 }
 .stButton > button[kind="primary"]:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    box-shadow: 0 10px 28px rgba(37, 99, 235, 0.52) !important;
+    transform: translateY(-2px) scale(1.015) !important;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.55), 0 0 16px rgba(6, 182, 212, 0.4) !important;
 }
 .stButton > button[kind="secondary"] {
     border-radius: 12px !important;
@@ -533,6 +683,7 @@ div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
     align-items: center;
     gap: 6px;
     transition: all 0.25s ease-in-out;
+    animation: beaconPulse 4s infinite ease-in-out;
 }
 .float-scroll-btn:hover {
     background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 50%, #06B6D4 100%);
@@ -871,7 +1022,16 @@ elif st.session_state.current_step == 2:
     for q in quiz_data:
         if q["module"] != current_module:
             current_module = q["module"]
-            st.markdown(f"#### 🏷️ {current_module}")
+            st.markdown(
+                f"""
+                <div style="display:flex;align-items:center;gap:10px;margin:28px 0 16px 0;">
+                    <span style="height:2px;width:24px;background:#38BDF8;border-radius:2px;"></span>
+                    <span style="font-size:16px;font-weight:800;color:#1E3A8A;letter-spacing:-0.2px;">🏷️ {current_module}</span>
+                    <span style="flex:1;height:1px;background:linear-gradient(90deg, rgba(56,189,248,0.4), transparent);"></span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         default_opt_index = 0
         current_saved = st.session_state.quiz_answers.get(q["id"], "A")
@@ -913,6 +1073,36 @@ elif st.session_state.current_step == 3:
     top_recommendations, intercepted_pitfalls = engine.calculate_recommendations(
         st.session_state.user_profile,
         st.session_state.quiz_answers
+    )
+
+    # 量子神经元矩阵运算状态全息卡 (动态光影扫描)
+    st.markdown(
+        """
+        <div class="cyber-decode-card">
+            <div class="cyber-scanner-sweep"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="cyber-pulse-dot"></span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;letter-spacing:1px;color:#38BDF8;">
+                        QUANTUM NEURAL ENGINE · 天赋拓扑全息矩阵解算完成
+                    </span>
+                </div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#BAE6FD;background:rgba(15,23,42,0.65);padding:3px 12px;border-radius:999px;border:1px solid rgba(56,189,248,0.3);letter-spacing:0.5px;">
+                    STATUS: OPTIMAL · 94 MAJORS PARSED
+                </div>
+            </div>
+            <div style="font-size:18px;font-weight:800;margin-bottom:10px;background:linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                🎯 多维天赋与行业生态耦合成功：已为你匹配出 Top 5 最优攻守平衡方案
+            </div>
+            <div class="cyber-decode-chips">
+                <span class="cyber-chip">⚡ 12道微观情境本能推演</span>
+                <span class="cyber-chip">🛡️ 19大高危下行赛道已严密熔断</span>
+                <span class="cyber-chip">🔄 35组孪生备选对标池已挂载</span>
+                <span class="cyber-chip">🎓 招生简章包装谎言滤镜已穿透</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     # ========================================================================
@@ -983,7 +1173,7 @@ elif st.session_state.current_step == 3:
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px;gap:8px;">
                     <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
                         <span style="font-size:24px;font-weight:800;color:#0F172A;letter-spacing:-0.5px;">{c['rank']} {c['name']}</span>
-                        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(37,99,235,0.08);color:#2563EB;border:1px solid rgba(37,99,235,0.25);padding:3px 10px;border-radius:999px;font-weight:700;">⚡ 匹配度 {c['score']} 分</span>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;background:linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(6,182,212,0.15) 100%);color:#0284C7;border:1px solid rgba(14,165,233,0.35);padding:4px 12px;border-radius:999px;font-weight:800;box-shadow:0 0 14px rgba(14,165,233,0.18);display:inline-flex;align-items:center;gap:4px;">⚡ 匹配度 {c['score']} 分</span>
                     </div>
                     <div>
                         <span class="badge-tag badge-hard">🛠️ {c['hardness_label']} (硬度 {c['hardness']})</span>
