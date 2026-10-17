@@ -84,6 +84,297 @@ def scroll_to_top():
         width=0,
     )
 
+def render_cosmic_intro(force_replay=False):
+    """
+    顶级科技公司级全屏 3D 星海穿梭与曲率跃迁开场动效 (SpaceX / Apple Keynote 质感)
+    - 使用 HTML5 Canvas 60FPS 3D 粒子流加速运动
+    - 结合全息引力中枢 HUD 旋转双环与高能渐变标题
+    - 具备自动跳过 (Skip) 与 2.5 秒后丝滑超光速隐退
+    - 采用 sessionStorage 状态保持，首次打开自动震撼呈现，支持从侧边栏随时一键重新跃迁
+    """
+    nonce = f"{time.time()}_{uuid.uuid4().hex}"
+    force_str = "true" if force_replay else "false"
+    components.html(
+        f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <!-- Nonce: {nonce} -->
+        </head>
+        <body style="margin:0;padding:0;overflow:hidden;">
+            <script>
+                (function() {{
+                    try {{
+                        var p = window.parent;
+                        if (!p || !p.document) return;
+                        
+                        var force = {force_str};
+                        var SEEN_KEY = "gaokao_cosmic_intro_played_v2";
+                        
+                        // 如果不是强制重放，且用户在本会话中已经看过，则直接静默跳过
+                        if (!force && p.sessionStorage && p.sessionStorage.getItem(SEEN_KEY)) {{
+                            return;
+                        }}
+                        
+                        // 记录已播放标记
+                        if (p.sessionStorage) {{
+                            p.sessionStorage.setItem(SEEN_KEY, "1");
+                        }}
+                        
+                        // 清理已存在的旧 overlay
+                        var existing = p.document.getElementById("cosmic-warp-overlay");
+                        if (existing) {{
+                            existing.remove();
+                        }}
+                        
+                        // 创建全屏宇宙全息容器
+                        var overlay = p.document.createElement("div");
+                        overlay.id = "cosmic-warp-overlay";
+                        overlay.style.position = "fixed";
+                        overlay.style.top = "0";
+                        overlay.style.left = "0";
+                        overlay.style.width = "100vw";
+                        overlay.style.height = "100vh";
+                        overlay.style.zIndex = "99999999";
+                        overlay.style.backgroundColor = "#030712";
+                        overlay.style.display = "flex";
+                        overlay.style.flexDirection = "column";
+                        overlay.style.alignItems = "center";
+                        overlay.style.justifyContent = "center";
+                        overlay.style.overflow = "hidden";
+                        overlay.style.userSelect = "none";
+                        overlay.style.transition = "opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease";
+                        
+                        // 注入专用 CSS 样式
+                        var styleEl = p.document.createElement("style");
+                        styleEl.innerHTML = `
+                            @keyframes cosmicRingSpin {{
+                                0% {{ transform: translate(-50%, -50%) rotate(0deg); }}
+                                100% {{ transform: translate(-50%, -50%) rotate(360deg); }}
+                            }}
+                            @keyframes cosmicRingSpinRev {{
+                                0% {{ transform: translate(-50%, -50%) rotate(360deg); }}
+                                100% {{ transform: translate(-50%, -50%) rotate(0deg); }}
+                            }}
+                            @keyframes cosmicPulseGlow {{
+                                0% {{ filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); transform: scale(0.98); }}
+                                50% {{ filter: drop-shadow(0 0 26px rgba(129, 140, 248, 0.85)); transform: scale(1.02); }}
+                                100% {{ filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); transform: scale(0.98); }}
+                            }}
+                        `;
+                        overlay.appendChild(styleEl);
+                        
+                        // 1. 创建 3D 星海 Canvas
+                        var canvas = p.document.createElement("canvas");
+                        canvas.style.position = "absolute";
+                        canvas.style.top = "0";
+                        canvas.style.left = "0";
+                        canvas.style.width = "100%";
+                        canvas.style.height = "100%";
+                        canvas.style.zIndex = "1";
+                        overlay.appendChild(canvas);
+                        
+                        // 2. 创建中央 HUD 全息中枢 UI
+                        var centerBox = p.document.createElement("div");
+                        centerBox.style.position = "relative";
+                        centerBox.style.zIndex = "2";
+                        centerBox.style.textAlign = "center";
+                        centerBox.style.display = "flex";
+                        centerBox.style.flexDirection = "column";
+                        centerBox.style.alignItems = "center";
+                        centerBox.style.pointerEvents = "none";
+                        centerBox.style.padding = "20px";
+                        centerBox.style.animation = "cosmicPulseGlow 3s infinite ease-in-out";
+                        
+                        centerBox.innerHTML = `
+                            <div style="position:relative; width: 140px; height: 140px; margin-bottom: 24px;">
+                                <div style="position:absolute; top:50%; left:50%; width:130px; height:130px; border:2px dashed rgba(56, 189, 248, 0.6); border-radius:50%; animation: cosmicRingSpin 12s linear infinite;"></div>
+                                <div style="position:absolute; top:50%; left:50%; width:100px; height:100px; border:1.5px solid rgba(192, 132, 252, 0.5); border-top-color: transparent; border-bottom-color: transparent; border-radius:50%; animation: cosmicRingSpinRev 7s linear infinite;"></div>
+                                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:48px; filter: drop-shadow(0 0 16px #38BDF8);">🧭</div>
+                            </div>
+                            
+                            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(15,23,42,0.7); border:1px solid rgba(56,189,248,0.5); color:#BAE6FD; padding:5px 16px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:14px; font-family:'JetBrains Mono', monospace; box-shadow:0 0 16px rgba(56,189,248,0.3);">
+                                <span style="width:8px; height:8px; background:#38BDF8; border-radius:50%; box-shadow:0 0 8px #38BDF8; display:inline-block;"></span>
+                                NEURAL GRAVITY FIELD ACTIVATED // 智愿全息引力场已唤醒
+                            </div>
+                            
+                            <div style="font-size:36px; font-weight:800; letter-spacing:-0.6px; margin:0 0 10px 0; background:linear-gradient(135deg, #FFFFFF 15%, #BAE6FD 60%, #C084FC 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 30px rgba(56,189,248,0.4); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                                航向未来 · 高考专业天赋解码与现实导航系统
+                            </div>
+                            
+                            <div style="font-size:14.5px; color:#94A3B8; max-width:640px; line-height:1.6; font-family:'JetBrains Mono', monospace; letter-spacing:0.8px; margin-bottom:20px;">
+                                WARP DRIVE ENGAGED // 94大类全息星系校准 · 12维本能投影装载中...
+                            </div>
+                            
+                            <div style="width:260px; height:3px; background:rgba(56,189,248,0.2); border-radius:999px; overflow:hidden;">
+                                <div id="cosmic-pbar-inner" style="width:0%; height:100%; background:linear-gradient(90deg, #38BDF8, #818CF8, #C084FC); transition:width 2.0s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+                            </div>
+                        `;
+                        overlay.appendChild(centerBox);
+                        
+                        // 3. 右下角 / 底部快速进入按钮
+                        var skipBtn = p.document.createElement("button");
+                        skipBtn.id = "cosmic-skip-btn";
+                        skipBtn.innerHTML = "⚡ 立即进入 (Skip Warp) ➔";
+                        skipBtn.style.position = "absolute";
+                        skipBtn.style.bottom = "36px";
+                        skipBtn.style.zIndex = "3";
+                        skipBtn.style.background = "rgba(15, 23, 42, 0.8)";
+                        skipBtn.style.border = "1px solid rgba(56, 189, 248, 0.5)";
+                        skipBtn.style.color = "#BAE6FD";
+                        skipBtn.style.padding = "9px 24px";
+                        skipBtn.style.borderRadius = "999px";
+                        skipBtn.style.fontSize = "13px";
+                        skipBtn.style.fontWeight = "700";
+                        skipBtn.style.cursor = "pointer";
+                        skipBtn.style.backdropFilter = "blur(12px)";
+                        skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.3)";
+                        skipBtn.style.transition = "all 0.2s ease";
+                        skipBtn.onmouseover = function() {{
+                            skipBtn.style.background = "rgba(30, 58, 138, 0.85)";
+                            skipBtn.style.borderColor = "#38BDF8";
+                            skipBtn.style.transform = "translateY(-2px) scale(1.03)";
+                            skipBtn.style.boxShadow = "0 8px 24px rgba(56, 189, 248, 0.55)";
+                        }};
+                        skipBtn.onmouseout = function() {{
+                            skipBtn.style.background = "rgba(15, 23, 42, 0.8)";
+                            skipBtn.style.borderColor = "rgba(56, 189, 248, 0.5)";
+                            skipBtn.style.transform = "translateY(0) scale(1)";
+                            skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.3)";
+                        }};
+                        overlay.appendChild(skipBtn);
+                        
+                        p.document.body.appendChild(overlay);
+                        
+                        // 4. 驱动 Canvas 3D 星海穿梭动画
+                        var ctx = canvas.getContext("2d");
+                        var width, height;
+                        function resize() {{
+                            width = canvas.width = p.innerWidth;
+                            height = canvas.height = p.innerHeight;
+                        }}
+                        resize();
+                        p.addEventListener("resize", resize);
+                        
+                        var stars = [];
+                        var numStars = 650;
+                        for (var i = 0; i < numStars; i++) {{
+                            stars.push({{
+                                x: (Math.random() - 0.5) * width * 2,
+                                y: (Math.random() - 0.5) * height * 2,
+                                z: Math.random() * width,
+                                pz: 0
+                            }});
+                        }}
+                        
+                        var speed = 16;
+                        var startTime = Date.now();
+                        var animFrameId;
+                        var dismissed = false;
+                        
+                        function dismiss() {{
+                            if (dismissed) return;
+                            dismissed = true;
+                            
+                            overlay.style.opacity = "0";
+                            overlay.style.transform = "scale(1.12)";
+                            overlay.style.filter = "blur(14px)";
+                            
+                            setTimeout(function() {{
+                                cancelAnimationFrame(animFrameId);
+                                p.removeEventListener("resize", resize);
+                                if (overlay && overlay.parentNode) {{
+                                    overlay.remove();
+                                }}
+                            }}, 750);
+                        }}
+                        
+                        skipBtn.onclick = function(e) {{
+                            e.stopPropagation();
+                            dismiss();
+                        }};
+                        overlay.onclick = function() {{
+                            dismiss();
+                        }};
+                        
+                        setTimeout(function() {{
+                            var pbar = p.document.getElementById("cosmic-pbar-inner");
+                            if (pbar) pbar.style.width = "100%";
+                        }}, 50);
+                        
+                        function loop() {{
+                            if (dismissed) return;
+                            var elapsed = Date.now() - startTime;
+                            
+                            if (elapsed < 1600) {{
+                                speed += 0.22;
+                            }} else if (elapsed >= 2500) {{
+                                dismiss();
+                                return;
+                            }}
+                            
+                            ctx.fillStyle = "rgba(3, 7, 18, 0.32)";
+                            ctx.fillRect(0, 0, width, height);
+                            
+                            var cx = width / 2;
+                            var cy = height / 2;
+                            
+                            for (var i = 0; i < stars.length; i++) {{
+                                var s = stars[i];
+                                s.pz = s.z;
+                                s.z -= speed;
+                                
+                                if (s.z <= 0) {{
+                                    s.z = width;
+                                    s.pz = width;
+                                    s.x = (Math.random() - 0.5) * width * 2;
+                                    s.y = (Math.random() - 0.5) * height * 2;
+                                }}
+                                
+                                var k = width / s.z;
+                                var px = s.x * k + cx;
+                                var py = s.y * k + cy;
+                                
+                                var pk = width / s.pz;
+                                var prevX = s.x * pk + cx;
+                                var prevY = s.y * pk + cy;
+                                
+                                if (px >= 0 && px <= width && py >= 0 && py <= height) {{
+                                    var alpha = Math.min(1, (1 - s.z / width) * 1.6);
+                                    ctx.beginPath();
+                                    ctx.moveTo(prevX, prevY);
+                                    ctx.lineTo(px, py);
+                                    
+                                    var colorIdx = i % 3;
+                                    if (colorIdx === 0) {{
+                                        ctx.strokeStyle = "rgba(56, 189, 248, " + alpha + ")";
+                                    }} else if (colorIdx === 1) {{
+                                        ctx.strokeStyle = "rgba(192, 132, 252, " + alpha + ")";
+                                    }} else {{
+                                        ctx.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
+                                    }}
+                                    ctx.lineWidth = Math.max(1, (1 - s.z / width) * 3.5);
+                                    ctx.stroke();
+                                }}
+                            }}
+                            
+                            animFrameId = requestAnimationFrame(loop);
+                        }}
+                        
+                        animFrameId = requestAnimationFrame(loop);
+                    }} catch (e) {{
+                        console.warn("Cosmic intro error:", e);
+                    }}
+                }})();
+            </script>
+        </body>
+        </html>
+        """,
+        height=0,
+        width=0,
+    )
+
 def load_pitfall_encyclopedia():
     p = Path(__file__).resolve().parent / "data" / "pitfall_majors_encyclopedia.json"
     if p.exists():
@@ -719,6 +1010,16 @@ if "quiz_answers" not in st.session_state:
     }
 
 # ============================================================================
+# 宇宙全息穿梭引力跃迁动效 (首次访问自动震撼呈现 / 侧边栏支持随时重温)
+# ============================================================================
+if "replay_cosmic_intro" not in st.session_state:
+    st.session_state.replay_cosmic_intro = False
+
+render_cosmic_intro(force_replay=st.session_state.replay_cosmic_intro)
+if st.session_state.replay_cosmic_intro:
+    st.session_state.replay_cosmic_intro = False
+
+# ============================================================================
 # 顶部锚点与自动置顶控制
 # ============================================================================
 st.markdown('<div id="page-top-anchor" style="position:absolute;top:0;left:0;height:0;width:0;opacity:0;"></div>', unsafe_allow_html=True)
@@ -801,6 +1102,12 @@ with st.sidebar:
     st.session_state.user_profile["enable_pitfall_filter"] = pitfall_toggle
 
     st.caption("💡 **避坑排雷已启动**：系统将从底层阻断‘挂羊头卖狗肉’的伪工科与夕阳方向，优先确保专业能学到真技术。")
+
+    st.markdown("---")
+    st.markdown("### 🌌 全息视觉特效")
+    if st.button("🚀 重温星际穿梭引力跃迁", use_container_width=True):
+        st.session_state.replay_cosmic_intro = True
+        st.rerun()
 
 # ============================================================================
 # 阶段 1：考生档案与核心诉求
