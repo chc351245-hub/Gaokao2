@@ -13,6 +13,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
+import time
+import uuid
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
@@ -21,41 +23,62 @@ from pathlib import Path
 from core.recommend_engine import engine
 
 def scroll_to_top():
-    """触发浏览器主视口平滑或瞬间置顶，彻底解决多题长页面切换后的滚动滞留问题"""
+    """触发浏览器主视口平滑置顶，彻底解决多题长页面切换后的滚动滞留问题"""
+    nonce = f"{time.time()}_{uuid.uuid4().hex}"
     components.html(
-        """
-        <script>
-            function performScroll() {
-                try {
-                    const parentDoc = window.parent.document;
-                    // 1. 定位页面顶部锚点
-                    const anchor = parentDoc.getElementById('page-top-anchor');
-                    if (anchor && anchor.scrollIntoView) {
-                        anchor.scrollIntoView({ behavior: 'auto', block: 'start' });
-                    }
-                    // 2. 兼容各种 Streamlit 版本的滚动容器选择器
-                    const containers = [
-                        parentDoc.querySelector('section.main'),
-                        parentDoc.querySelector('.stMain'),
-                        parentDoc.querySelector('[data-testid="stMain"]'),
-                        parentDoc.querySelector('[data-testid="stAppViewContainer"]'),
-                        parentDoc.documentElement,
-                        parentDoc.body
-                    ];
-                    for (const el of containers) {
-                        if (el && el.scrollTop !== undefined) {
-                            el.scrollTop = 0;
-                        }
-                    }
-                    window.parent.scrollTo(0, 0);
-                } catch (e) {
-                    window.scrollTo(0, 0);
-                }
-            }
-            performScroll();
-            setTimeout(performScroll, 50);
-            setTimeout(performScroll, 150);
-        </script>
+        f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <!-- Nonce: {nonce} -->
+        </head>
+        <body style="margin:0;padding:0;overflow:hidden;">
+            <script>
+                function doScroll() {{
+                    try {{
+                        var p = window.parent;
+                        if (!p || !p.document) return;
+                        
+                        // 1. 找到当前组件自身 iframe 并强制调用 scrollIntoView 让浏览器原生回滚至顶部
+                        var iframes = p.document.getElementsByTagName("iframe");
+                        for (var i = 0; i < iframes.length; i++) {{
+                            var ifr = iframes[i];
+                            if (ifr.contentWindow === window) {{
+                                ifr.scrollIntoView({{ behavior: "smooth", block: "start" }});
+                                break;
+                            }}
+                        }}
+
+                        // 2. 双重兜底：直接重置 Streamlit 视口容器滚动距离
+                        var selectors = [
+                            '.main',
+                            'section.main',
+                            '[data-testid="stMain"]',
+                            '[data-testid="stAppViewContainer"]',
+                            '[data-testid="stAppViewBlockContainer"]',
+                            p.document.documentElement,
+                            p.document.body
+                        ];
+                        for (var j = 0; j < selectors.length; j++) {{
+                            var item = selectors[j];
+                            var el = (typeof item === 'string') ? p.document.querySelector(item) : item;
+                            if (el && el.scrollTop !== undefined && el.scrollTop > 0) {{
+                                el.scrollTop = 0;
+                            }}
+                        }}
+                        p.scrollTo(0, 0);
+                    }} catch (e) {{
+                        console.warn("Auto scroll error:", e);
+                    }}
+                }}
+                doScroll();
+                setTimeout(doScroll, 60);
+                setTimeout(doScroll, 180);
+                setTimeout(doScroll, 380);
+            </script>
+        </body>
+        </html>
         """,
         height=0,
         width=0,
@@ -359,6 +382,32 @@ html, body, [class*="css"] {
     margin-bottom: 18px;
     animation: fadeInUp 0.3s ease-out;
 }
+
+/* 屏幕右下角悬浮置顶按钮 */
+.float-scroll-btn {
+    position: fixed;
+    bottom: 26px;
+    right: 28px;
+    z-index: 999999;
+    background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+    color: #FFFFFF !important;
+    text-decoration: none !important;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease-in-out;
+}
+.float-scroll-btn:hover {
+    background: linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.55);
+    color: #FFFFFF !important;
+}
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
@@ -390,6 +439,7 @@ if "quiz_answers" not in st.session_state:
 # 顶部锚点与自动置顶控制
 # ============================================================================
 st.markdown('<div id="page-top-anchor" style="position:absolute;top:0;left:0;height:0;width:0;opacity:0;"></div>', unsafe_allow_html=True)
+st.markdown('<a href="#page-top-anchor" class="float-scroll-btn" target="_self">⬆️ 回到顶部</a>', unsafe_allow_html=True)
 
 if "last_rendered_step" not in st.session_state:
     st.session_state.last_rendered_step = st.session_state.current_step
