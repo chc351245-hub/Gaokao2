@@ -1297,7 +1297,10 @@ with st.sidebar:
     )
     st.session_state.user_profile["enable_pitfall_filter"] = pitfall_toggle
 
-    st.caption("💡 **避坑排雷已启动**：系统将从底层阻断‘挂羊头卖狗肉’的伪工科与夕阳方向，优先确保专业能学到真技术。")
+    if pitfall_toggle:
+        st.caption("🛡️ **避坑排雷已启动**：系统将从底层阻断‘挂羊头卖狗肉’的伪工科与夕阳方向，优先确保专业能学到真技术。")
+    else:
+        st.caption("⚠️ **避坑排雷已关闭**：已解除 19 个高危下行大类的系统熔断，全 94 个大类均可自由参评推荐。")
 
     st.markdown("---")
     st.markdown("### 🌌 全息视觉特效")
@@ -1578,9 +1581,12 @@ elif st.session_state.current_step == 3:
         st.session_state.quiz_answers
     )
 
+    enable_pitfall_active = st.session_state.user_profile.get("enable_pitfall_filter", True)
+    pitfall_chip_html = '<span class="cyber-chip">🛡️ 19大高危下行赛道已严密熔断</span>' if enable_pitfall_active else '<span class="cyber-chip" style="border-color:#F59E0B;color:#FBBF24;background:rgba(245,158,11,0.12);">⚠️ 避坑守护已关闭 · 全94大类自由竞争</span>'
+
     # 量子神经元矩阵运算状态全息卡 (动态光影扫描)
     st.markdown(
-        """
+        f"""
         <div class="cyber-decode-card">
             <div class="cyber-scanner-sweep"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
@@ -1599,7 +1605,7 @@ elif st.session_state.current_step == 3:
             </div>
             <div class="cyber-decode-chips">
                 <span class="cyber-chip">⚡ 12道微观情境本能推演</span>
-                <span class="cyber-chip">🛡️ 19大高危下行赛道已严密熔断</span>
+                {pitfall_chip_html}
                 <span class="cyber-chip">🔄 35组孪生备选对标池已挂载</span>
                 <span class="cyber-chip">🎓 招生简章包装谎言滤镜已穿透</span>
             </div>
@@ -1608,20 +1614,45 @@ elif st.session_state.current_step == 3:
         unsafe_allow_html=True
     )
 
+    # 命中情境排斥项的一票否决拦截提示
+    if intercepted_pitfalls and enable_pitfall_active:
+        with st.expander(f"🛑 根据你的测评排斥项，已为你自动拦截 {len(intercepted_pitfalls)} 个高危大类（点击查看被否决专业与实情揭秘）", expanded=False):
+            for item in intercepted_pitfalls:
+                st.markdown(
+                    f"""
+                    <div style="background:#FFF5F5;border-left:4px solid #EF4444;border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+                        <span style="font-weight:800;color:#991B1B;">⚠️ {item['name']}</span>
+                        <div style="font-size:12.5px;color:#B91C1C;margin:4px 0;"><b>拦截原因</b>: {item['reason']}</div>
+                        <div style="font-size:12px;color:#4B5563;"><b>真实日常</b>: {item.get('truth', '')}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
     # ========================================================================
     # 专属【19 大高危与下行避坑专业深度全景剖析专区】（独立专属按键专区）
     # ========================================================================
     pitfall_encyclopedia = load_pitfall_encyclopedia()
     if pitfall_encyclopedia:
         with st.expander("🚨 【志愿避坑排雷指南 / 19 大高危与下行专业深度全景剖析专区】（点击展开查阅为何劝退、详细优劣势与唯一生存路径）", expanded=False):
-            st.markdown(
-                """
-                <div style="font-size:13px;color:#991B1B;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;margin-bottom:14px;line-height:1.6;">
-                    🛡️ <b>独立排雷专区说明</b>：以下 19 个专业受<b>行业周期断崖、生化环材毒害倒班、偏远野外极端艰苦或纯管理低壁垒</b>影响，已彻底移出算法推荐榜。在此专区中，我们为你<b>客观剖析每个专业的招生宣称、残酷日常、唯一优点及极少数适合人群</b>，帮助你与家庭理性决策，坚决不踩暗坑！
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            if enable_pitfall_active:
+                st.markdown(
+                    """
+                    <div style="font-size:13px;color:#991B1B;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 14px;margin-bottom:14px;line-height:1.6;">
+                        🛡️ <b>独立排雷专区说明</b>：以下 19 个专业受<b>行业周期断崖、生化环材毒害倒班、偏远野外极端艰苦或纯管理低壁垒</b>影响，已在当前算法中执行<b>系统熔断拦截</b>。在此专区中，我们为你<b>客观剖析每个专业的招生宣称、残酷日常、唯一优点及极少数适合人群</b>，帮助你与家庭理性决策，坚决不踩暗坑！
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    """
+                    <div style="font-size:13px;color:#92400E;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 14px;margin-bottom:14px;line-height:1.6;">
+                        ⚠️ <b>排雷守护已关闭说明</b>：当前你已关闭侧边栏「高考志愿避坑排雷守护」，以下 19 个专业已<b>解除系统熔断</b>，与全 94 个大类共同参与算法评分与自由竞争。但各专业的客观行业周期与真实就业代价依然存在，建议认真对照查阅！
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
             tab_p1, tab_p2, tab_p3 = st.tabs([
                 "🏗️ 偏远野外与周期断崖 (5个)",
                 "🧪 传统生化环材高危 (5个)",
