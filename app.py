@@ -86,11 +86,13 @@ def scroll_to_top():
 
 def render_cosmic_intro(force_replay=False):
     """
-    顶级科技公司级全屏 3D 星海穿梭与曲率跃迁开场动效 (SpaceX / Apple Keynote 质感)
-    - 使用 HTML5 Canvas 60FPS 3D 粒子流加速运动
-    - 结合全息引力中枢 HUD 旋转双环与高能渐变标题
-    - 具备自动跳过 (Skip) 与 2.5 秒后丝滑超光速隐退
-    - 采用 sessionStorage 状态保持，首次打开自动震撼呈现，支持从侧边栏随时一键重新跃迁
+    顶级科技公司级（SpaceX / Apple Keynote / Interstellar 质感）电影级全屏引力星云与全息浑天罗盘开场
+    - Retina 视网膜级高分辨率 Canvas (DPR 自动适配)
+    - 60FPS 双层天体星尘系统：500+ 微光闪烁深空恒星 + 180条引力吸积流线 + 动态星座知识拓扑连线
+    - 极精细 SVG 浑天经纬刻度环 (度数刻度、反向公转轨道、天文经纬流)
+    - 电影级动态排版与实时星谱解算电报数据流
+    - 引力坍缩与超新星漫射隐退转场 (Gravitational Collapse & Supernova Bloom)
+    - 智能会话记忆 (sessionStorage) + 随时跳过 + 侧边栏一键重温
     """
     nonce = f"{time.time()}_{uuid.uuid4().hex}"
     force_str = "true" if force_replay else "false"
@@ -110,19 +112,15 @@ def render_cosmic_intro(force_replay=False):
                         if (!p || !p.document) return;
                         
                         var force = {force_str};
-                        var SEEN_KEY = "gaokao_cosmic_intro_played_v2";
+                        var SEEN_KEY = "gaokao_cosmic_intro_played_v3";
                         
-                        // 如果不是强制重放，且用户在本会话中已经看过，则直接静默跳过
                         if (!force && p.sessionStorage && p.sessionStorage.getItem(SEEN_KEY)) {{
                             return;
                         }}
-                        
-                        // 记录已播放标记
                         if (p.sessionStorage) {{
                             p.sessionStorage.setItem(SEEN_KEY, "1");
                         }}
                         
-                        // 清理已存在的旧 overlay
                         var existing = p.document.getElementById("cosmic-warp-overlay");
                         if (existing) {{
                             existing.remove();
@@ -137,35 +135,38 @@ def render_cosmic_intro(force_replay=False):
                         overlay.style.width = "100vw";
                         overlay.style.height = "100vh";
                         overlay.style.zIndex = "99999999";
-                        overlay.style.backgroundColor = "#030712";
+                        overlay.style.backgroundColor = "#02040A";
                         overlay.style.display = "flex";
                         overlay.style.flexDirection = "column";
                         overlay.style.alignItems = "center";
                         overlay.style.justifyContent = "center";
                         overlay.style.overflow = "hidden";
                         overlay.style.userSelect = "none";
-                        overlay.style.transition = "opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease";
+                        overlay.style.transition = "opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease";
                         
-                        // 注入专用 CSS 样式
                         var styleEl = p.document.createElement("style");
                         styleEl.innerHTML = `
-                            @keyframes cosmicRingSpin {{
-                                0% {{ transform: translate(-50%, -50%) rotate(0deg); }}
-                                100% {{ transform: translate(-50%, -50%) rotate(360deg); }}
+                            @keyframes astrolabeRotateCw {{
+                                0% {{ transform: rotate(0deg); }}
+                                100% {{ transform: rotate(360deg); }}
                             }}
-                            @keyframes cosmicRingSpinRev {{
-                                0% {{ transform: translate(-50%, -50%) rotate(360deg); }}
-                                100% {{ transform: translate(-50%, -50%) rotate(0deg); }}
+                            @keyframes astrolabeRotateCcw {{
+                                0% {{ transform: rotate(360deg); }}
+                                100% {{ transform: rotate(0deg); }}
                             }}
-                            @keyframes cosmicPulseGlow {{
-                                0% {{ filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); transform: scale(0.98); }}
-                                50% {{ filter: drop-shadow(0 0 26px rgba(129, 140, 248, 0.85)); transform: scale(1.02); }}
-                                100% {{ filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); transform: scale(0.98); }}
+                            @keyframes celestialAuraPulse {{
+                                0% {{ transform: scale(0.97); opacity: 0.65; }}
+                                50% {{ transform: scale(1.03); opacity: 0.95; filter: drop-shadow(0 0 28px rgba(56, 189, 248, 0.65)); }}
+                                100% {{ transform: scale(0.97); opacity: 0.65; }}
+                            }}
+                            @keyframes titleShimmerFlow {{
+                                0% {{ background-position: -200% 0; }}
+                                100% {{ background-position: 200% 0; }}
                             }}
                         `;
                         overlay.appendChild(styleEl);
                         
-                        // 1. 创建 3D 星海 Canvas
+                        // 1. Retina 高清 Canvas
                         var canvas = p.document.createElement("canvas");
                         canvas.style.position = "absolute";
                         canvas.style.top = "0";
@@ -175,7 +176,7 @@ def render_cosmic_intro(force_replay=False):
                         canvas.style.zIndex = "1";
                         overlay.appendChild(canvas);
                         
-                        // 2. 创建中央 HUD 全息中枢 UI
+                        // 2. 中央天文浑天仪与电影感文字中枢
                         var centerBox = p.document.createElement("div");
                         centerBox.style.position = "relative";
                         centerBox.style.zIndex = "2";
@@ -185,101 +186,164 @@ def render_cosmic_intro(force_replay=False):
                         centerBox.style.alignItems = "center";
                         centerBox.style.pointerEvents = "none";
                         centerBox.style.padding = "20px";
-                        centerBox.style.animation = "cosmicPulseGlow 3s infinite ease-in-out";
+                        centerBox.style.maxWidth = "880px";
                         
                         centerBox.innerHTML = `
-                            <div style="position:relative; width: 140px; height: 140px; margin-bottom: 24px;">
-                                <div style="position:absolute; top:50%; left:50%; width:130px; height:130px; border:2px dashed rgba(56, 189, 248, 0.6); border-radius:50%; animation: cosmicRingSpin 12s linear infinite;"></div>
-                                <div style="position:absolute; top:50%; left:50%; width:100px; height:100px; border:1.5px solid rgba(192, 132, 252, 0.5); border-top-color: transparent; border-bottom-color: transparent; border-radius:50%; animation: cosmicRingSpinRev 7s linear infinite;"></div>
-                                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); font-size:48px; filter: drop-shadow(0 0 16px #38BDF8);">🧭</div>
+                            <!-- 精密 SVG 天文浑天经纬罗盘 -->
+                            <div style="position:relative; width: 160px; height: 160px; margin-bottom: 24px; animation: celestialAuraPulse 4s infinite ease-in-out;">
+                                <!-- 外层刻度方位环 -->
+                                <svg style="position:absolute; top:0; left:0; width:100%; height:100%; animation: astrolabeRotateCw 24s linear infinite;" viewBox="0 0 160 160">
+                                    <circle cx="80" cy="80" r="76" fill="none" stroke="rgba(56, 189, 248, 0.35)" stroke-width="1" stroke-dasharray="3, 5"/>
+                                    <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(129, 140, 248, 0.25)" stroke-width="0.8"/>
+                                    <!-- 12 宿方位标记 -->
+                                    <line x1="80" y1="4" x2="80" y2="10" stroke="#38BDF8" stroke-width="1.5"/>
+                                    <line x1="80" y1="150" x2="80" y2="156" stroke="#38BDF8" stroke-width="1.5"/>
+                                    <line x1="4" y1="80" x2="10" y2="80" stroke="#38BDF8" stroke-width="1.5"/>
+                                    <line x1="150" y1="80" x2="156" y2="80" stroke="#38BDF8" stroke-width="1.5"/>
+                                    <circle cx="80" cy="10" r="2" fill="#38BDF8"/>
+                                    <circle cx="150" cy="80" r="2" fill="#818CF8"/>
+                                    <circle cx="80" cy="150" r="2" fill="#C084FC"/>
+                                    <circle cx="10" cy="80" r="2" fill="#34D399"/>
+                                </svg>
+                                <!-- 内层反向精密公转轨道 -->
+                                <svg style="position:absolute; top:15px; left:15px; width:130px; height:130px; animation: astrolabeRotateCcw 14s linear infinite;" viewBox="0 0 130 130">
+                                    <circle cx="65" cy="65" r="58" fill="none" stroke="rgba(192, 132, 252, 0.4)" stroke-width="1" stroke-dasharray="14, 8, 4, 8"/>
+                                    <circle cx="65" cy="65" r="48" fill="none" stroke="rgba(56, 189, 248, 0.2)" stroke-width="0.6"/>
+                                    <circle cx="115" cy="65" r="3" fill="#38BDF8" filter="drop-shadow(0 0 4px #38BDF8)"/>
+                                    <circle cx="25" cy="40" r="2.5" fill="#C084FC"/>
+                                </svg>
+                                <!-- 中心全息引力奇点指南徽章 -->
+                                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:68px; height:68px; background:radial-gradient(circle, rgba(15,23,42,0.85) 0%, rgba(30,58,138,0.4) 70%, transparent 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 24px rgba(56, 189, 248, 0.4);">
+                                    <span style="font-size:36px; filter: drop-shadow(0 0 14px #38BDF8);">🧭</span>
+                                </div>
                             </div>
                             
-                            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(15,23,42,0.7); border:1px solid rgba(56,189,248,0.5); color:#BAE6FD; padding:5px 16px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:14px; font-family:'JetBrains Mono', monospace; box-shadow:0 0 16px rgba(56,189,248,0.3);">
-                                <span style="width:8px; height:8px; background:#38BDF8; border-radius:50%; box-shadow:0 0 8px #38BDF8; display:inline-block;"></span>
-                                NEURAL GRAVITY FIELD ACTIVATED // 智愿全息引力场已唤醒
+                            <!-- 顶级技术电报徽标 -->
+                            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(15,23,42,0.7); border:1px solid rgba(56,189,248,0.45); color:#BAE6FD; padding:5px 18px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:1.5px; margin-bottom:16px; font-family:'JetBrains Mono', monospace; backdrop-filter:blur(14px); box-shadow:0 0 20px rgba(56,189,248,0.25);">
+                                <span style="width:7px; height:7px; background:#38BDF8; border-radius:50%; box-shadow:0 0 8px #38BDF8; display:inline-block;"></span>
+                                DESTINATION MATRIX // 全息引力场已校准
                             </div>
                             
-                            <div style="font-size:36px; font-weight:800; letter-spacing:-0.6px; margin:0 0 10px 0; background:linear-gradient(135deg, #FFFFFF 15%, #BAE6FD 60%, #C084FC 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 30px rgba(56,189,248,0.4); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                            <!-- 电影感主标题 -->
+                            <div style="font-size:38px; font-weight:800; letter-spacing:0.04em; margin:0 0 12px 0; background:linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 45%, #C084FC 80%, #FFFFFF 100%); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-shadow:0 0 35px rgba(56,189,248,0.35); font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; animation: titleShimmerFlow 6s linear infinite;">
                                 航向未来 · 高考专业天赋解码与现实导航系统
                             </div>
                             
-                            <div style="font-size:14.5px; color:#94A3B8; max-width:640px; line-height:1.6; font-family:'JetBrains Mono', monospace; letter-spacing:0.8px; margin-bottom:20px;">
-                                WARP DRIVE ENGAGED // 94大类全息星系校准 · 12维本能投影装载中...
+                            <!-- 细腻副标题与数据流状态 -->
+                            <div style="font-size:14px; color:#94A3B8; max-width:680px; line-height:1.7; font-family:'JetBrains Mono', monospace; letter-spacing:0.06em; margin-bottom:22px;">
+                                <span style="color:#38BDF8;">●</span> RA 14h 29m // DEC +62°40' // 94大类高校星谱多维投射 · 12维本能引力场解析中
                             </div>
                             
-                            <div style="width:260px; height:3px; background:rgba(56,189,248,0.2); border-radius:999px; overflow:hidden;">
-                                <div id="cosmic-pbar-inner" style="width:0%; height:100%; background:linear-gradient(90deg, #38BDF8, #818CF8, #C084FC); transition:width 2.0s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+                            <!-- 极细量子进度条 -->
+                            <div style="width:280px; height:2px; background:rgba(56,189,248,0.18); border-radius:999px; overflow:hidden; position:relative;">
+                                <div id="cosmic-pbar-fill" style="width:0%; height:100%; background:linear-gradient(90deg, #38BDF8, #818CF8, #C084FC); transition:width 2.3s cubic-bezier(0.16, 1, 0.3, 1);"></div>
                             </div>
                         `;
                         overlay.appendChild(centerBox);
                         
-                        // 3. 右下角 / 底部快速进入按钮
+                        // 3. 悬浮极简科技胶囊按钮
                         var skipBtn = p.document.createElement("button");
                         skipBtn.id = "cosmic-skip-btn";
-                        skipBtn.innerHTML = "⚡ 立即进入 (Skip Warp) ➔";
+                        skipBtn.innerHTML = "⚡ 立即进入系统 (Skip) ➔";
                         skipBtn.style.position = "absolute";
                         skipBtn.style.bottom = "36px";
                         skipBtn.style.zIndex = "3";
-                        skipBtn.style.background = "rgba(15, 23, 42, 0.8)";
-                        skipBtn.style.border = "1px solid rgba(56, 189, 248, 0.5)";
+                        skipBtn.style.background = "rgba(15, 23, 42, 0.75)";
+                        skipBtn.style.border = "1px solid rgba(56, 189, 248, 0.45)";
                         skipBtn.style.color = "#BAE6FD";
                         skipBtn.style.padding = "9px 24px";
                         skipBtn.style.borderRadius = "999px";
-                        skipBtn.style.fontSize = "13px";
+                        skipBtn.style.fontSize = "12.5px";
                         skipBtn.style.fontWeight = "700";
+                        skipBtn.style.letterSpacing = "0.8px";
                         skipBtn.style.cursor = "pointer";
-                        skipBtn.style.backdropFilter = "blur(12px)";
-                        skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.3)";
-                        skipBtn.style.transition = "all 0.2s ease";
+                        skipBtn.style.backdropFilter = "blur(14px)";
+                        skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.25)";
+                        skipBtn.style.transition = "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
                         skipBtn.onmouseover = function() {{
                             skipBtn.style.background = "rgba(30, 58, 138, 0.85)";
                             skipBtn.style.borderColor = "#38BDF8";
                             skipBtn.style.transform = "translateY(-2px) scale(1.03)";
-                            skipBtn.style.boxShadow = "0 8px 24px rgba(56, 189, 248, 0.55)";
+                            skipBtn.style.boxShadow = "0 8px 26px rgba(56, 189, 248, 0.5)";
                         }};
                         skipBtn.onmouseout = function() {{
-                            skipBtn.style.background = "rgba(15, 23, 42, 0.8)";
-                            skipBtn.style.borderColor = "rgba(56, 189, 248, 0.5)";
+                            skipBtn.style.background = "rgba(15, 23, 42, 0.75)";
+                            skipBtn.style.borderColor = "rgba(56, 189, 248, 0.45)";
                             skipBtn.style.transform = "translateY(0) scale(1)";
-                            skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.3)";
+                            skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.25)";
                         }};
                         overlay.appendChild(skipBtn);
                         
                         p.document.body.appendChild(overlay);
                         
-                        // 4. 驱动 Canvas 3D 星海穿梭动画
+                        // 4. Retina-sharp 高清 Canvas 粒子引擎
                         var ctx = canvas.getContext("2d");
-                        var width, height;
+                        var width, height, dpr;
                         function resize() {{
-                            width = canvas.width = p.innerWidth;
-                            height = canvas.height = p.innerHeight;
+                            dpr = Math.min(p.devicePixelRatio || 1, 2);
+                            width = p.innerWidth;
+                            height = p.innerHeight;
+                            canvas.width = width * dpr;
+                            canvas.height = height * dpr;
+                            ctx.scale(dpr, dpr);
                         }}
                         resize();
                         p.addEventListener("resize", resize);
                         
-                        var stars = [];
-                        var numStars = 650;
-                        for (var i = 0; i < numStars; i++) {{
-                            stars.push({{
-                                x: (Math.random() - 0.5) * width * 2,
-                                y: (Math.random() - 0.5) * height * 2,
-                                z: Math.random() * width,
-                                pz: 0
+                        // --- 粒子群 1：深空微光闪烁星尘 (550颗细腻微光点) ---
+                        var deepStars = [];
+                        for (var i = 0; i < 550; i++) {{
+                            deepStars.push({{
+                                x: Math.random() * width,
+                                y: Math.random() * height,
+                                r: Math.random() * 1.3 + 0.3,
+                                alpha: Math.random() * 0.7 + 0.2,
+                                speed: Math.random() * 0.03 + 0.01,
+                                phase: Math.random() * Math.PI * 2
                             }});
                         }}
                         
-                        var speed = 16;
+                        // --- 粒子群 2：引力吸积盘流光束 (160颗流线粒子) ---
+                        var streamParticles = [];
+                        for (var j = 0; j < 160; j++) {{
+                            var angle = Math.random() * Math.PI * 2;
+                            var dist = Math.random() * (Math.max(width, height) * 0.7) + 60;
+                            streamParticles.push({{
+                                angle: angle,
+                                dist: dist,
+                                speed: (Math.random() * 0.008 + 0.003) * (dist < 300 ? 1.5 : 1),
+                                radialSpeed: Math.random() * 0.8 + 0.3,
+                                r: Math.random() * 1.8 + 0.6,
+                                colorType: j % 3
+                            }});
+                        }}
+                        
+                        // --- 粒子群 3：知识拓扑动态星座骨架 (28个核心节点连线) ---
+                        var nodes = [];
+                        for (var k = 0; k < 28; k++) {{
+                            nodes.push({{
+                                x: width / 2 + (Math.random() - 0.5) * 600,
+                                y: height / 2 + (Math.random() - 0.5) * 400,
+                                vx: (Math.random() - 0.5) * 0.6,
+                                vy: (Math.random() - 0.5) * 0.6
+                            }});
+                        }}
+                        
                         var startTime = Date.now();
                         var animFrameId;
                         var dismissed = false;
+                        var shockwaveRadius = 0;
+                        var collapsing = false;
                         
                         function dismiss() {{
                             if (dismissed) return;
                             dismissed = true;
+                            collapsing = true;
                             
+                            // 电影级超新星光晕扩散隐退
                             overlay.style.opacity = "0";
-                            overlay.style.transform = "scale(1.12)";
-                            overlay.style.filter = "blur(14px)";
+                            overlay.style.transform = "scale(1.06)";
+                            overlay.style.filter = "blur(18px)";
                             
                             setTimeout(function() {{
                                 cancelAnimationFrame(animFrameId);
@@ -287,7 +351,7 @@ def render_cosmic_intro(force_replay=False):
                                 if (overlay && overlay.parentNode) {{
                                     overlay.remove();
                                 }}
-                            }}, 750);
+                            }}, 800);
                         }}
                         
                         skipBtn.onclick = function(e) {{
@@ -299,70 +363,114 @@ def render_cosmic_intro(force_replay=False):
                         }};
                         
                         setTimeout(function() {{
-                            var pbar = p.document.getElementById("cosmic-pbar-inner");
+                            var pbar = p.document.getElementById("cosmic-pbar-fill");
                             if (pbar) pbar.style.width = "100%";
-                        }}, 50);
+                        }}, 60);
                         
-                        function loop() {{
-                            if (dismissed) return;
+                        function render() {{
+                            if (!overlay.parentNode) return;
                             var elapsed = Date.now() - startTime;
                             
-                            if (elapsed < 1600) {{
-                                speed += 0.22;
-                            }} else if (elapsed >= 2500) {{
+                            if (elapsed >= 2700 && !dismissed) {{
                                 dismiss();
                                 return;
                             }}
                             
-                            ctx.fillStyle = "rgba(3, 7, 18, 0.32)";
+                            // 1. 绘制深邃背景与微弱多色星云 (Nebula Backing)
+                            ctx.fillStyle = "rgba(2, 4, 10, 0.4)";
                             ctx.fillRect(0, 0, width, height);
                             
                             var cx = width / 2;
                             var cy = height / 2;
                             
-                            for (var i = 0; i < stars.length; i++) {{
-                                var s = stars[i];
-                                s.pz = s.z;
-                                s.z -= speed;
-                                
-                                if (s.z <= 0) {{
-                                    s.z = width;
-                                    s.pz = width;
-                                    s.x = (Math.random() - 0.5) * width * 2;
-                                    s.y = (Math.random() - 0.5) * height * 2;
-                                }}
-                                
-                                var k = width / s.z;
-                                var px = s.x * k + cx;
-                                var py = s.y * k + cy;
-                                
-                                var pk = width / s.pz;
-                                var prevX = s.x * pk + cx;
-                                var prevY = s.y * pk + cy;
-                                
-                                if (px >= 0 && px <= width && py >= 0 && py <= height) {{
-                                    var alpha = Math.min(1, (1 - s.z / width) * 1.6);
-                                    ctx.beginPath();
-                                    ctx.moveTo(prevX, prevY);
-                                    ctx.lineTo(px, py);
-                                    
-                                    var colorIdx = i % 3;
-                                    if (colorIdx === 0) {{
-                                        ctx.strokeStyle = "rgba(56, 189, 248, " + alpha + ")";
-                                    }} else if (colorIdx === 1) {{
-                                        ctx.strokeStyle = "rgba(192, 132, 252, " + alpha + ")";
-                                    }} else {{
-                                        ctx.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
-                                    }}
-                                    ctx.lineWidth = Math.max(1, (1 - s.z / width) * 3.5);
-                                    ctx.stroke();
-                                }}
+                            // 柔和星云渐变 (Cyan / Indigo / Orchid)
+                            var neb = ctx.createRadialGradient(cx, cy, 20, cx, cy, Math.max(width, height) * 0.55);
+                            neb.addColorStop(0, "rgba(30, 58, 138, 0.22)");
+                            neb.addColorStop(0.4, "rgba(56, 189, 248, 0.08)");
+                            neb.addColorStop(0.7, "rgba(147, 51, 234, 0.05)");
+                            neb.addColorStop(1, "transparent");
+                            ctx.fillStyle = neb;
+                            ctx.fillRect(0, 0, width, height);
+                            
+                            // 2. 绘制深空闪烁微星
+                            for (var i = 0; i < deepStars.length; i++) {{
+                                var ds = deepStars[i];
+                                ds.phase += ds.speed;
+                                var curAlpha = ds.alpha * (0.6 + 0.4 * Math.sin(ds.phase));
+                                ctx.beginPath();
+                                ctx.arc(ds.x, ds.y, ds.r, 0, Math.PI * 2);
+                                ctx.fillStyle = "rgba(255, 255, 255, " + curAlpha + ")";
+                                ctx.fill();
                             }}
                             
-                            animFrameId = requestAnimationFrame(loop);
+                            // 3. 绘制知识拓扑星座动态网格 (Constellation Network)
+                            for (var a = 0; a < nodes.length; a++) {{
+                                var na = nodes[a];
+                                na.x += na.vx;
+                                na.y += na.vy;
+                                if (na.x < cx - 350 || na.x > cx + 350) na.vx *= -1;
+                                if (na.y < cy - 250 || na.y > cy + 250) na.vy *= -1;
+                                
+                                for (var b = a + 1; b < nodes.length; b++) {{
+                                    var nb = nodes[b];
+                                    var dx = na.x - nb.x;
+                                    var dy = na.y - nb.y;
+                                    var d = Math.sqrt(dx * dx + dy * dy);
+                                    if (d < 110) {{
+                                        var lineAlpha = (1 - d / 110) * 0.22;
+                                        ctx.beginPath();
+                                        ctx.moveTo(na.x, na.y);
+                                        ctx.lineTo(nb.x, nb.y);
+                                        ctx.strokeStyle = "rgba(56, 189, 248, " + lineAlpha + ")";
+                                        ctx.lineWidth = 0.6;
+                                        ctx.stroke();
+                                    }}
+                                }}
+                                ctx.beginPath();
+                                ctx.arc(na.x, na.y, 1.8, 0, Math.PI * 2);
+                                ctx.fillStyle = "rgba(129, 140, 248, 0.6)";
+                                ctx.fill();
+                            }}
+                            
+                            // 4. 绘制引力吸积盘流光束粒子 (Keplerian Orbiters)
+                            for (var j = 0; j < streamParticles.length; j++) {{
+                                var sp = streamParticles[j];
+                                sp.angle += sp.speed;
+                                sp.dist -= sp.radialSpeed * (collapsing ? 3.5 : 1);
+                                if (sp.dist <= 40) {{
+                                    sp.dist = Math.random() * (Math.max(width, height) * 0.7) + 200;
+                                }}
+                                
+                                var px = cx + Math.cos(sp.angle) * sp.dist;
+                                var py = cy + Math.sin(sp.angle) * (sp.dist * 0.62); // 椭圆轨道透视
+                                
+                                ctx.beginPath();
+                                ctx.arc(px, py, sp.r, 0, Math.PI * 2);
+                                if (sp.colorType === 0) {{
+                                    ctx.fillStyle = "rgba(56, 189, 248, 0.85)";
+                                }} else if (sp.colorType === 1) {{
+                                    ctx.fillStyle = "rgba(192, 132, 252, 0.85)";
+                                }} else {{
+                                    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+                                }}
+                                ctx.fill();
+                            }}
+                            
+                            // 5. 退出时的超新星光环漫射 (Supernova Shockwave)
+                            if (collapsing) {{
+                                shockwaveRadius += 32;
+                                var waveAlpha = Math.max(0, 1 - shockwaveRadius / (Math.max(width, height) * 0.8));
+                                ctx.beginPath();
+                                ctx.arc(cx, cy, shockwaveRadius, 0, Math.PI * 2);
+                                ctx.strokeStyle = "rgba(56, 189, 248, " + waveAlpha + ")";
+                                ctx.lineWidth = 2.5;
+                                ctx.stroke();
+                            }}
+                            
+                            animFrameId = requestAnimationFrame(render);
                         }}
                         
-                        animFrameId = requestAnimationFrame(loop);
+                        animFrameId = requestAnimationFrame(render);
                     }} catch (e) {{
                         console.warn("Cosmic intro error:", e);
                     }}
