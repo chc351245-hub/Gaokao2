@@ -112,14 +112,11 @@ def render_cosmic_intro(force_replay=False):
                         if (!p || !p.document) return;
                         
                         var force = {force_str};
-                        var SEEN_KEY = "gaokao_cosmic_intro_played_v3";
-                        
-                        if (!force && p.sessionStorage && p.sessionStorage.getItem(SEEN_KEY)) {{
-                            return;
-                        }}
-                        if (p.sessionStorage) {{
-                            p.sessionStorage.setItem(SEEN_KEY, "1");
-                        }}
+                        try {{
+                            if (p.sessionStorage) {{
+                                p.sessionStorage.removeItem("gaokao_cosmic_intro_played_v3");
+                            }}
+                        }} catch(e) {{}}
                         
                         var existing = p.document.getElementById("cosmic-warp-overlay");
                         if (existing) {{
@@ -276,6 +273,40 @@ def render_cosmic_intro(force_replay=False):
                             enterBtn.style.boxShadow = "0 8px 32px rgba(37, 99, 235, 0.45), 0 0 16px rgba(56, 189, 248, 0.35) inset";
                         }};
                         overlay.appendChild(enterBtn);
+                        
+                        // 顶部快捷跳过按钮
+                        var skipBtn = p.document.createElement("button");
+                        skipBtn.id = "cosmic-skip-btn";
+                        skipBtn.innerHTML = "跳过动画 ✕";
+                        skipBtn.style.position = "absolute";
+                        skipBtn.style.top = "24px";
+                        skipBtn.style.right = "28px";
+                        skipBtn.style.zIndex = "20";
+                        skipBtn.style.background = "rgba(15,23,42,0.6)";
+                        skipBtn.style.border = "1px solid rgba(56, 189, 248, 0.35)";
+                        skipBtn.style.color = "#BAE6FD";
+                        skipBtn.style.padding = "6px 16px";
+                        skipBtn.style.borderRadius = "999px";
+                        skipBtn.style.fontSize = "12px";
+                        skipBtn.style.fontFamily = "'JetBrains Mono', monospace";
+                        skipBtn.style.cursor = "pointer";
+                        skipBtn.style.backdropFilter = "blur(10px)";
+                        skipBtn.style.transition = "all 0.2s ease";
+                        skipBtn.onmouseover = function() {{
+                            skipBtn.style.background = "rgba(30,58,138,0.8)";
+                            skipBtn.style.borderColor = "#38BDF8";
+                            skipBtn.style.color = "#FFFFFF";
+                        }};
+                        skipBtn.onmouseout = function() {{
+                            skipBtn.style.background = "rgba(15,23,42,0.6)";
+                            skipBtn.style.borderColor = "rgba(56, 189, 248, 0.35)";
+                            skipBtn.style.color = "#BAE6FD";
+                        }};
+                        skipBtn.onclick = function(e) {{
+                            e.stopPropagation();
+                            dismiss();
+                        }};
+                        overlay.appendChild(skipBtn);
                         
                         p.document.body.appendChild(overlay);
                         
@@ -1206,14 +1237,19 @@ if "quiz_answers" not in st.session_state:
     }
 
 # ============================================================================
-# 宇宙全息穿梭引力跃迁动效 (首次访问自动震撼呈现 / 侧边栏支持随时重温)
+# 宇宙全息穿梭引力跃迁动效 (首次访问/刷新自动震撼呈现 / 侧边栏支持随时重温)
 # ============================================================================
-if "replay_cosmic_intro" not in st.session_state:
+if "intro_has_played" not in st.session_state:
+    st.session_state.intro_has_played = True
+    should_play_intro = True
+elif st.session_state.get("replay_cosmic_intro", False):
+    should_play_intro = True
     st.session_state.replay_cosmic_intro = False
+else:
+    should_play_intro = False
 
-render_cosmic_intro(force_replay=st.session_state.replay_cosmic_intro)
-if st.session_state.replay_cosmic_intro:
-    st.session_state.replay_cosmic_intro = False
+if should_play_intro:
+    render_cosmic_intro(force_replay=True)
 
 # ============================================================================
 # 顶部锚点与自动置顶控制
