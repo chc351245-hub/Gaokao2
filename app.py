@@ -230,53 +230,56 @@ def render_cosmic_intro(force_replay=False):
                             </div>
                             
                             <!-- 细腻副标题与数据流状态 -->
-                            <div style="font-size:14px; color:#94A3B8; max-width:680px; line-height:1.7; font-family:'JetBrains Mono', monospace; letter-spacing:0.06em; margin-bottom:22px;">
+                            <div id="cosmic-telemetry-text" style="font-size:14px; color:#94A3B8; max-width:680px; line-height:1.7; font-family:'JetBrains Mono', monospace; letter-spacing:0.06em; margin-bottom:22px; transition:color 0.4s ease;">
                                 <span style="color:#38BDF8;">●</span> RA 14h 29m // DEC +62°40' // 94大类高校星谱多维投射 · 12维本能引力场解析中
                             </div>
                             
                             <!-- 极细量子进度条 -->
                             <div style="width:280px; height:2px; background:rgba(56,189,248,0.18); border-radius:999px; overflow:hidden; position:relative;">
-                                <div id="cosmic-pbar-fill" style="width:0%; height:100%; background:linear-gradient(90deg, #38BDF8, #818CF8, #C084FC); transition:width 2.3s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+                                <div id="cosmic-pbar-fill" style="width:0%; height:100%; background:linear-gradient(90deg, #38BDF8, #818CF8, #C084FC); transition:width 1.8s cubic-bezier(0.16, 1, 0.3, 1);"></div>
                             </div>
                         `;
                         overlay.appendChild(centerBox);
                         
-                        // 3. 悬浮极简科技胶囊按钮
-                        var skipBtn = p.document.createElement("button");
-                        skipBtn.id = "cosmic-skip-btn";
-                        skipBtn.innerHTML = "⚡ 立即进入系统 (Skip) ➔";
-                        skipBtn.style.position = "absolute";
-                        skipBtn.style.bottom = "36px";
-                        skipBtn.style.zIndex = "3";
-                        skipBtn.style.background = "rgba(15, 23, 42, 0.75)";
-                        skipBtn.style.border = "1px solid rgba(56, 189, 248, 0.45)";
-                        skipBtn.style.color = "#BAE6FD";
-                        skipBtn.style.padding = "9px 24px";
-                        skipBtn.style.borderRadius = "999px";
-                        skipBtn.style.fontSize = "12.5px";
-                        skipBtn.style.fontWeight = "700";
-                        skipBtn.style.letterSpacing = "0.8px";
-                        skipBtn.style.cursor = "pointer";
-                        skipBtn.style.backdropFilter = "blur(14px)";
-                        skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.25)";
-                        skipBtn.style.transition = "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
-                        skipBtn.onmouseover = function() {{
-                            skipBtn.style.background = "rgba(30, 58, 138, 0.85)";
-                            skipBtn.style.borderColor = "#38BDF8";
-                            skipBtn.style.transform = "translateY(-2px) scale(1.03)";
-                            skipBtn.style.boxShadow = "0 8px 26px rgba(56, 189, 248, 0.5)";
+                        // 3. 高能启航进入系统按钮 (不自动跳转，等待用户指令启航)
+                        var enterBtn = p.document.createElement("button");
+                        enterBtn.id = "cosmic-enter-btn";
+                        enterBtn.innerHTML = `
+                            <span style="display:inline-block;width:9px;height:9px;background:#38BDF8;border-radius:50%;box-shadow:0 0 10px #38BDF8;margin-right:10px;animation:celestialAuraPulse 2s infinite;"></span>
+                            <span>🚀 开启引力跃迁 · 启航进入决策系统 ➔</span>
+                        `;
+                        enterBtn.style.position = "absolute";
+                        enterBtn.style.bottom = "42px";
+                        enterBtn.style.zIndex = "10";
+                        enterBtn.style.background = "linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,58,138,0.8) 100%)";
+                        enterBtn.style.border = "1px solid rgba(56, 189, 248, 0.65)";
+                        enterBtn.style.color = "#FFFFFF";
+                        enterBtn.style.padding = "13px 36px";
+                        enterBtn.style.borderRadius = "999px";
+                        enterBtn.style.fontSize = "14.5px";
+                        enterBtn.style.fontWeight = "800";
+                        enterBtn.style.letterSpacing = "1px";
+                        enterBtn.style.cursor = "pointer";
+                        enterBtn.style.backdropFilter = "blur(18px)";
+                        enterBtn.style.boxShadow = "0 8px 32px rgba(37, 99, 235, 0.45), 0 0 16px rgba(56, 189, 248, 0.35) inset";
+                        enterBtn.style.transition = "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
+                        enterBtn.onmouseover = function() {{
+                            enterBtn.style.background = "linear-gradient(135deg, rgba(30,58,138,0.95) 0%, rgba(37,99,235,0.9) 100%)";
+                            enterBtn.style.borderColor = "#38BDF8";
+                            enterBtn.style.transform = "translateY(-3px) scale(1.04)";
+                            enterBtn.style.boxShadow = "0 14px 40px rgba(37, 99, 235, 0.7), 0 0 24px rgba(56, 189, 248, 0.55)";
                         }};
-                        skipBtn.onmouseout = function() {{
-                            skipBtn.style.background = "rgba(15, 23, 42, 0.75)";
-                            skipBtn.style.borderColor = "rgba(56, 189, 248, 0.45)";
-                            skipBtn.style.transform = "translateY(0) scale(1)";
-                            skipBtn.style.boxShadow = "0 4px 20px rgba(56, 189, 248, 0.25)";
+                        enterBtn.onmouseout = function() {{
+                            enterBtn.style.background = "linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,58,138,0.8) 100%)";
+                            enterBtn.style.borderColor = "rgba(56, 189, 248, 0.65)";
+                            enterBtn.style.transform = "translateY(0) scale(1)";
+                            enterBtn.style.boxShadow = "0 8px 32px rgba(37, 99, 235, 0.45), 0 0 16px rgba(56, 189, 248, 0.35) inset";
                         }};
-                        overlay.appendChild(skipBtn);
+                        overlay.appendChild(enterBtn);
                         
                         p.document.body.appendChild(overlay);
                         
-                        // 4. Retina-sharp 高清 Canvas 粒子引擎
+                        // 4. Retina-sharp 高清 Canvas 粒子与水波引擎
                         var ctx = canvas.getContext("2d");
                         var width, height, dpr;
                         function resize() {{
@@ -329,6 +332,50 @@ def render_cosmic_intro(force_replay=False):
                             }});
                         }}
                         
+                        // --- 互动引力水波涟漪系统 (Interactive Gravitational Ripples) ---
+                        var ripples = [];
+                        function addRipple(rx, ry, maxR, intensity, color) {{
+                            ripples.push({{
+                                x: rx,
+                                y: ry,
+                                r: 4,
+                                maxR: maxR || 240,
+                                speed: 4.8,
+                                alpha: intensity || 0.85,
+                                color: color || (Math.random() > 0.5 ? '56, 189, 248' : '192, 132, 252')
+                            }});
+                        }}
+                        
+                        // 鼠标滑动生成微水波波纹
+                        var lastMx = null, lastMy = null;
+                        p.addEventListener("mousemove", function(e) {{
+                            if (!overlay.parentNode || dismissed) return;
+                            var mx = e.clientX;
+                            var my = e.clientY;
+                            if (lastMx !== null) {{
+                                var dist = Math.hypot(mx - lastMx, my - lastMy);
+                                if (dist > 32) {{
+                                    addRipple(mx, my, 85, 0.28, "56, 189, 248");
+                                    lastMx = mx;
+                                    lastMy = my;
+                                }}
+                            }} else {{
+                                lastMx = mx;
+                                lastMy = my;
+                            }}
+                        }});
+                        
+                        // 鼠标点击生成多重环形引力水波 (不退出，仅互动)
+                        overlay.addEventListener("click", function(e) {{
+                            if (dismissed) return;
+                            if (e.target !== enterBtn && !enterBtn.contains(e.target)) {{
+                                addRipple(e.clientX, e.clientY, 280, 0.95);
+                                setTimeout(function() {{
+                                    if (!dismissed) addRipple(e.clientX, e.clientY, 200, 0.65, "192, 132, 252");
+                                }}, 140);
+                            }}
+                        }});
+                        
                         var startTime = Date.now();
                         var animFrameId;
                         var dismissed = false;
@@ -354,27 +401,30 @@ def render_cosmic_intro(force_replay=False):
                             }}, 800);
                         }}
                         
-                        skipBtn.onclick = function(e) {{
+                        // 仅在点击进入按钮时才启航退出
+                        enterBtn.onclick = function(e) {{
                             e.stopPropagation();
-                            dismiss();
-                        }};
-                        overlay.onclick = function() {{
+                            var rect = enterBtn.getBoundingClientRect();
+                            var bx = rect.left + rect.width / 2;
+                            var by = rect.top + rect.height / 2;
+                            addRipple(bx, by, Math.max(width, height) * 1.3, 1.0, "56, 189, 248");
                             dismiss();
                         }};
                         
+                        // 启动进度条并在完成后更新状态提示语
                         setTimeout(function() {{
                             var pbar = p.document.getElementById("cosmic-pbar-fill");
                             if (pbar) pbar.style.width = "100%";
+                            var statusText = p.document.getElementById("cosmic-telemetry-text");
+                            if (statusText) {{
+                                setTimeout(function() {{
+                                    statusText.innerHTML = '<span style="color:#34D399;font-weight:700;">● 全系统就绪</span> // 94大类高校星图多维校准完毕 · 轻触星空可泛起引力水波，点击下方按钮启航';
+                                }}, 1800);
+                            }}
                         }}, 60);
                         
                         function render() {{
                             if (!overlay.parentNode) return;
-                            var elapsed = Date.now() - startTime;
-                            
-                            if (elapsed >= 2700 && !dismissed) {{
-                                dismiss();
-                                return;
-                            }}
                             
                             // 1. 绘制深邃背景与微弱多色星云 (Nebula Backing)
                             ctx.fillStyle = "rgba(2, 4, 10, 0.4)";
@@ -456,7 +506,45 @@ def render_cosmic_intro(force_replay=False):
                                 ctx.fill();
                             }}
                             
-                            // 5. 退出时的超新星光环漫射 (Supernova Shockwave)
+                            // 5. 绘制引力水波涟漪特效 (Concentric Gravitational Waves / Water Ripples)
+                            for (var wIdx = ripples.length - 1; wIdx >= 0; wIdx--) {{
+                                var rip = ripples[wIdx];
+                                rip.r += rip.speed;
+                                rip.alpha *= 0.965;
+                                
+                                // 外圈主波
+                                ctx.beginPath();
+                                ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+                                ctx.strokeStyle = "rgba(" + rip.color + ", " + rip.alpha + ")";
+                                ctx.lineWidth = Math.max(0.6, 2.8 * (1 - rip.r / rip.maxR));
+                                ctx.stroke();
+                                
+                                // 内圈回声副波
+                                if (rip.r > 24) {{
+                                    ctx.beginPath();
+                                    ctx.arc(rip.x, rip.y, rip.r - 16, 0, Math.PI * 2);
+                                    ctx.strokeStyle = "rgba(" + rip.color + ", " + (rip.alpha * 0.45) + ")";
+                                    ctx.lineWidth = 1;
+                                    ctx.stroke();
+                                }}
+                                
+                                // 水波推开周围微光星尘 (Fluid wave displacement)
+                                for (var sIdx = 0; sIdx < deepStars.length; sIdx++) {{
+                                    var star = deepStars[sIdx];
+                                    var dStar = Math.hypot(star.x - rip.x, star.y - rip.y);
+                                    if (Math.abs(dStar - rip.r) < 22) {{
+                                        var ang = Math.atan2(star.y - rip.y, star.x - rip.x);
+                                        star.x += Math.cos(ang) * 1.8;
+                                        star.y += Math.sin(ang) * 1.8;
+                                    }}
+                                }}
+                                
+                                if (rip.alpha < 0.015 || rip.r >= rip.maxR) {{
+                                    ripples.splice(wIdx, 1);
+                                }}
+                            }}
+                            
+                            // 6. 退出时的超新星光环漫射 (Supernova Shockwave)
                             if (collapsing) {{
                                 shockwaveRadius += 32;
                                 var waveAlpha = Math.max(0, 1 - shockwaveRadius / (Math.max(width, height) * 0.8));
